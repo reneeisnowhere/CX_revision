@@ -34,10 +34,10 @@ library(drc)
 adding input data
 
 ```{r data import}
-X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_0hr_ipsc_96wellplate_baseline_no_treatment_10-14-2025_251014.xls", 
+X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 <- read_excel("data/Presto_blue_results/87-1_0hr_ipsc_96wellplate_baseline_no_treatment_10-14-2025_251014.xls", 
     skip = 34)
 
-X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_48hr_ipsc_96wellplate_CX-DOX-Veh_10-16-2025_251016.xls", 
+X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 <- read_excel("data/Presto_blue_results/87-1_48hr_ipsc_96wellplate_CX-DOX-Veh_10-16-2025_251016.xls", 
     skip = 34)
 
 combo_time_data <- 
@@ -53,7 +53,9 @@ X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 %>%
 ```
 
 ```{r Platemap}
-Plate_map <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Plate_map.xlsx")
+Plate_map <- read_excel("data/Presto_blue_results/Plate_map.xlsx")
+
+
 ```
 
 
@@ -215,16 +217,16 @@ gpt_try_DOX %>%
 ### 75-1 iPSC renee
 
 ```{r 75-1 iPSC me}
-T0_75_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p1_iPSC_T0_251026.xls", 
+T0_75_iPSC_p1_viability <- read_excel("data/Presto_blue_results/75_p1_iPSC_T0_251026.xls", 
     skip = 26)
 
-T0_75_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p2_iPSC_T0_251026.xls", 
+T0_75_iPSC_p2_viability <- read_excel("data/Presto_blue_results/75_p2_iPSC_T0_251026.xls", 
     skip = 26)
 
-T48_75_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p1_T48_251028.xlsx", 
+T48_75_iPSC_p1_viability <- read_excel("data/Presto_blue_results/75_iPSC_p1_T48_251028.xlsx", 
     skip = 26)
 
-T48_75_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p2_T48_251028.xlsx", 
+T48_75_iPSC_p2_viability <- read_excel("data/Presto_blue_results/75_iPSC_p2_T48_251028.xlsx", 
     skip = 26)
 
 iPSC_75_viability_data <- 
@@ -245,7 +247,7 @@ T0_75_iPSC_p1_viability %>%
 
 
 ```{r iPSC 48 platemap 75}
-iPSC_plate_map <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx", 
+iPSC_plate_map <- read_excel("data/Presto_blue_results/iPSC_cell_viability_platemap.xlsx", 
     skip = 9)
 
 ```
@@ -328,16 +330,16 @@ final_df_75 %>%
 ### 78-1 iPSC renee
 
 ```{r 78-1 iPSC me}
-T0_78_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p1_iPSC_T0_251026.xls", 
+T0_78_iPSC_p1_viability <- read_excel("data/Presto_blue_results/78_p1_iPSC_T0_251026.xls", 
     skip = 26)
 
-T0_78_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p2_iPSC_T0_251026.xls", 
+T0_78_iPSC_p2_viability <- read_excel("data/Presto_blue_results/78_p2_iPSC_T0_251026.xls", 
     skip = 26)
 
-T48_78_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p1_T48_251028.xlsx", 
+T48_78_iPSC_p1_viability <- read_excel("data/Presto_blue_results/78_iPSC_p1_T48_251028.xlsx", 
     skip = 26)
 
-T48_78_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p2_T48_251028.xlsx", 
+T48_78_iPSC_p2_viability <- read_excel("data/Presto_blue_results/78_iPSC_p2_T48_251028.xlsx", 
     skip = 26)
 
 iPSC_78_viability_data <- 
@@ -356,7 +358,7 @@ T0_78_iPSC_p1_viability %>%
 ```
 
 ```{r iPSC 48 platemap 78}
-iPSC_plate_map <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx", 
+iPSC_plate_map <- read_excel("data/Presto_blue_results/iPSC_cell_viability_platemap.xlsx", 
     skip = 9)
 
 ```
@@ -440,16 +442,16 @@ final_df_78 %>%
 ### 87-1 iPSC renee
 
 ```{r 87-1 iPSC me}
-T0_87_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T0_251027.xlsx", 
+T0_87_iPSC_p1_viability <- read_excel("data/Presto_blue_results/87_iPSC_p1_T0_251027.xlsx", 
     skip = 26)
 
-T0_87_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T0_251027.xlsx", 
+T0_87_iPSC_p2_viability <- read_excel("data/Presto_blue_results/87_iPSC_p2_T0_251027.xlsx", 
     skip = 26)
 
-T48_87_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T48_251029.xlsx", 
+T48_87_iPSC_p1_viability <- read_excel("data/Presto_blue_results/87_iPSC_p1_T48_251029.xlsx", 
     skip = 26)
 
-T48_87_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T48_251029.xlsx", 
+T48_87_iPSC_p2_viability <- read_excel("data/Presto_blue_results/87_iPSC_p2_T48_251029.xlsx", 
     skip = 26)
 
 iPSC_87_viability_data <- 
@@ -641,7 +643,7 @@ ggplot(
 
 ```{r CM platemap}
 
-CM_platemap <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/CM_cell_viability_platemap.xlsx", 
+CM_platemap <- read_excel("data/Presto_blue_results/CM_cell_viability_platemap.xlsx", 
     skip = 9
     )
 
@@ -649,24 +651,24 @@ CM_platemap <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/CM_cell
 
 
 ```{r loading data 87}
-T0_87_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T0_251028.xlsx", 
+T0_87_CM_p1_viability <- read_excel("data/Presto_blue_results/87_iPSC-CM_p1_T0_251028.xlsx", 
     skip = 26)
 
-T0_87_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p2_T0_251028.xlsx", 
+T0_87_CM_p2_viability <- read_excel("data/Presto_blue_results/87_iPSC-CM_p2_T0_251028.xlsx", 
     skip = 26)
 
-T0_87_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p3_T0_251028.xlsx", 
+T0_87_CM_p3_viability <- read_excel("data/Presto_blue_results/87_iPSC-CM_p3_T0_251028.xlsx", 
     skip = 26)
 
-T0_87_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p4_T0_251028.xlsx", 
+T0_87_CM_p4_viability <- read_excel("data/Presto_blue_results/87_iPSC-CM_p4_T0_251028.xlsx", 
     skip = 26)
-T3_87_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T3_251028.xlsx", 
-    skip = 26)
-
-T24_87_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p2_T24_251029.xlsx", 
+T3_87_CM_p1_viability <- read_excel("data/Presto_blue_results/87_iPSC-CM_p1_T3_251028.xlsx", 
     skip = 26)
 
-T48_87_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_CM_p3_T48_251030.xlsx", 
+T24_87_CM_p2_viability <- read_excel("data/Presto_blue_results/87_iPSC_CM_p2_T24_251029.xlsx", 
+    skip = 26)
+
+T48_87_CM_p3_viability <- read_excel("data/Presto_blue_results/87_CM_p3_T48_251030.xlsx", 
     skip = 26)
 
 # T96_87_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p4_T96_251101.xlsx", 
@@ -695,25 +697,25 @@ CM_combo_87 <- T0_87_CM_p1_viability %>%
 
 
 ```{r loading data 78}
-T0_78_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T0_251028.xlsx", 
+T0_78_CM_p1_viability <- read_excel("data/Presto_blue_results/78_iPSC-CM_p1_T0_251028.xlsx", 
     skip = 26)
 
-T0_78_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p2_T0_251028.xlsx", 
+T0_78_CM_p2_viability <- read_excel("data/Presto_blue_results/78_iPSC-CM_p2_T0_251028.xlsx", 
     skip = 26)
 
-T0_78_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p3_T0_251028.xlsx", 
+T0_78_CM_p3_viability <- read_excel("data/Presto_blue_results/78_iPSC-CM_p3_T0_251028.xlsx", 
     skip = 26)
 
-T0_78_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p4_T0_251028.xlsx", 
+T0_78_CM_p4_viability <- read_excel("data/Presto_blue_results/78_iPSC-CM_p4_T0_251028.xlsx", 
     skip = 26)
 
-T3_78_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T3_251028.xlsx", 
+T3_78_CM_p1_viability <- read_excel("data/Presto_blue_results/78_iPSC-CM_p1_T3_251028.xlsx", 
     skip = 26)
 
-T24_78_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_CM_p2_T24_251029.xlsx", 
+T24_78_CM_p2_viability <- read_excel("data/Presto_blue_results/78_iPSC_CM_p2_T24_251029.xlsx", 
     skip = 26)
 
-T48_78_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p3_T48_251030.xlsx", 
+T48_78_CM_p3_viability <- read_excel("data/Presto_blue_results/78_CM_p3_T48_251030.xlsx", 
     skip = 26)
 
 # T96_78_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p4_T96_251101.xlsx", 
@@ -743,20 +745,20 @@ CM_combo_78 <- T0_78_CM_p1_viability %>%
 
 
 ```{r loading data 75}
-T0_75_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p1_T0_251028.xlsx", 
+T0_75_CM_p1_viability <- read_excel("data/Presto_blue_results/75_iPSC-CM_p1_T0_251028.xlsx", 
     skip = 26)
 
-T0_75_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p2_T0_251028.xlsx", 
+T0_75_CM_p2_viability <- read_excel("data/Presto_blue_results/75_iPSC-CM_p2_T0_251028.xlsx", 
     skip = 26)
 
-T0_75_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p3_T0_251028.xlsx", 
+T0_75_CM_p3_viability <- read_excel("data/Presto_blue_results/75_iPSC-CM_p3_T0_251028.xlsx", 
     skip = 26)
 
 
-T24_75_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_CM_p2_T24_251029.xlsx", 
+T24_75_CM_p2_viability <- read_excel("data/Presto_blue_results/75_iPSC_CM_p2_T24_251029.xlsx", 
     skip = 26)
 
-T48_75_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_CM_p3_T48_251030.xlsx", 
+T48_75_CM_p3_viability <- read_excel("data/Presto_blue_results/75_CM_p3_T48_251030.xlsx", 
     skip = 26)
 
 
