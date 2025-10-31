@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Renee Matthews" />
+
+<meta name="date" content="2025-10-31" />
+
+<title>CX-revision</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CX_revison</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">CX-revision</h1>
+<h4 class="author">Renee Matthews</h4>
+<h4 class="date">2025-10-31</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-10-31
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>CX_revison/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251031code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251031)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251031code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251031)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong635aef2">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 635aef2
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong635aef2"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 635aef2.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  data/iPSC_75_DRC_20251028.csv
+    Untracked:  data/iPSC_78_DRC_20251028.csv
+    Untracked:  data/iPSC_87_DRC_20251029.csv
+
+Unstaged changes:
+    Modified:   CX_revison.Rproj
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/CX-revision.Rmd</code>) and HTML
+(<code>docs/CX-revision.html</code>) files. If you’ve configured a
+remote Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+635aef2
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-10-31
+</td>
+<td>
+wflow_publish("analysis/CX-revision.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+</style>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(readr)
+library(drc)</code></pre>
+<p>adding input data</p>
+<pre class="r"><code>X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_0hr_ipsc_96wellplate_baseline_no_treatment_10-14-2025_251014.xls&quot;, 
+    skip = 34)
+
+X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_48hr_ipsc_96wellplate_CX-DOX-Veh_10-16-2025_251016.xls&quot;, 
+    skip = 34)
+
+combo_time_data &lt;- 
+X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 %&gt;% 
+  dplyr::filter(Well==&quot;Read 2:560,590&quot;) %&gt;% 
+  mutate(Well=&quot;zero&quot;) %&gt;% 
+  bind_rows(X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 %&gt;% 
+              dplyr::filter(Well==&quot;Read 2:560,590&quot;) %&gt;% mutate(Well=&quot;two_day&quot;)) %&gt;% 
+  dplyr::rename(&quot;Time&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time&quot;, values_from = &quot;reading&quot;)</code></pre>
+<pre class="r"><code>Plate_map &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Plate_map.xlsx&quot;)</code></pre>
+<pre class="r"><code>  base_df &lt;- Plate_map %&gt;%
+  pivot_longer(cols = everything(), names_to = &quot;Well&quot;) %&gt;%
+  separate(col = value, into = c(&quot;trt&quot;, &quot;conc&quot;), sep = &quot;_&quot;) %&gt;%
+  left_join(., combo_time_data, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(zero, two_day), names_to = &quot;Time&quot;) %&gt;%
+  mutate(
+    trt  = factor(trt, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;Unt&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;1&quot;,&quot;5&quot;,&quot;10&quot;,&quot;50&quot;,&quot;blank&quot;)),
+    Time = factor(Time, levels = c(&quot;zero&quot;,&quot;two_day&quot;))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed &lt;- base_df %&gt;%
+  group_by(Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[trt == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup()
+
+
+untx_per_ct &lt;- processed %&gt;%
+  filter(trt == &quot;Unt&quot;) %&gt;%                 # only VEH rows
+  group_by(conc, Time) %&gt;%
+  summarise(
+    unt_mean = mean(adj_reading, na.rm = TRUE),
+    n_unt = n(),
+    .groups = &quot;drop&quot;
+  )
+
+with_veh &lt;-processed %&gt;%
+  left_join(untx_per_ct, by = c( &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_veh = case_when(
+      is.na(unt_mean)          ~ NA_real_,               # no VEH present for that conc×Time
+      unt_mean == 0            ~ NA_real_,               # avoid division by zero
+      TRUE                     ~ (adj_reading / unt_mean) * 100
+    )
+  )
+  
+wide_norm &lt;-
+with_veh %&gt;%
+  dplyr::select(Well, trt, conc.x, Time, norm_to_veh) %&gt;%
+  pivot_wider(id_cols = c(Well, trt, conc.x), names_from = Time, values_from = norm_to_veh)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df &lt;- wide_norm %&gt;%
+  mutate(
+    hr_norm = case_when(
+      is.na(zero) | is.na(two_day) ~ NA_real_,
+      zero == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (two_day / zero) * 100
+    )
+  ) %&gt;%
+  filter(trt != &quot;blank&quot;)</code></pre>
+<pre class="r"><code>final_df %&gt;% 
+  dplyr::rename(&quot;conc&quot;=conc.x) %&gt;% 
+  ggplot(., aes(x=conc, y=zero))+
+  geom_boxplot(aes(fill=trt))+
+  theme_bw()+
+  ggtitle(&quot;Box plot of normalized day zero across treatments&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>final_df %&gt;% 
+  dplyr::rename(&quot;conc&quot;=conc.x) %&gt;% 
+  ggplot(., aes(x=conc, y=two_day))+
+  geom_boxplot(aes(fill=trt))+
+  theme_bw()+
+  ggtitle(&quot;Box plot of normalized day two across treatments&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/plots-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>final_df %&gt;% 
+  dplyr::rename(&quot;conc&quot;=conc.x) %&gt;% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=trt))+
+  theme_bw()+
+  ggtitle(&quot;Box plot of normalized across time for each well (between plates)&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/plots-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Fit
+gpt_try &lt;- final_df %&gt;%
+  filter(trt == &quot;CX&quot;) %&gt;%
+  mutate(conc.x = as.numeric(as.character(conc.x))) 
+model &lt;- final_df %&gt;%
+  filter(trt == &quot;CX&quot;) %&gt;%
+  mutate(conc.x = as.numeric(as.character(conc.x))) %&gt;% 
+  drm(hr_norm ~ conc.x, data = ., fct = L.4())
+
+# Predict across log-spaced range
+pred &lt;- data.frame(conc.x = exp(seq(log(min(gpt_try$conc.x[gpt_try$conc.x &gt; 0])),
+                                    log(max(gpt_try$conc.x)),
+                                    length.out = 100)))
+pred$hr_norm &lt;- predict(model, newdata = pred)
+
+
+LD50 &lt;- ED(model, 50, interval = &quot;delta&quot;)  # 50% effective dose</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error    Lower    Upper
+e:1:50 0.939655   0.077668 0.777642 1.101668</code></pre>
+<pre class="r"><code>LD50_val &lt;- as.numeric(LD50[1,1])
+# Plot
+gpt_try %&gt;%
+  filter(trt == &quot;CX&quot;) %&gt;%
+  ggplot(aes(x = conc.x, y = hr_norm)) +
+  geom_point() +
+  geom_line(data = pred, aes(x = conc.x, y = hr_norm), color = &quot;blue&quot;, size = 1) +
+  geom_vline(xintercept = LD50_val, color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  annotate(&quot;text&quot;, x = LD50_val, y = max(gpt_try$hr_norm, na.rm = TRUE),
+           label = paste0(&quot;LD50 = &quot;, signif(LD50_val, 3)),
+           color = &quot;red&quot;, angle = 90, vjust = -0.5, hjust = 1.1) +
+  scale_x_log10() +
+  theme_minimal()+
+  ggtitle(&quot;iPSC 87-1 Dose response Assay for CX&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/CX%20DRC%20first%20run-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Fit
+gpt_try_DOX &lt;- final_df %&gt;%
+  filter(trt == &quot;DOX&quot;) %&gt;%
+  mutate(conc.x = as.numeric(as.character(conc.x))) 
+model_DOX &lt;- final_df %&gt;%
+  filter(trt == &quot;DOX&quot;) %&gt;%
+  mutate(conc.x = as.numeric(as.character(conc.x))) %&gt;% 
+  drm(hr_norm ~ conc.x, data = ., fct = L.4())
+
+# Predict across log-spaced range
+pred_DOX &lt;- data.frame(conc.x = exp(seq(log(min(gpt_try_DOX$conc.x[gpt_try_DOX$conc.x &gt; 0])),
+                                    log(max(gpt_try_DOX$conc.x)),
+                                    length.out = 100)))
+pred_DOX$hr_norm &lt;- predict(model_DOX, newdata = pred_DOX)
+
+
+LD50_DOX &lt;- ED(model_DOX, 50, interval = &quot;delta&quot;)  # 50% effective dose</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error   Lower   Upper
+e:1:50  0.97482    0.07383 0.81830 1.13133</code></pre>
+<pre class="r"><code>LD50_val_DOX &lt;- as.numeric(LD50_DOX[1,1])
+# Plot
+gpt_try_DOX %&gt;%
+  filter(trt == &quot;DOX&quot;) %&gt;%
+  ggplot(aes(x = conc.x, y = hr_norm)) +
+  geom_point() +
+  geom_line(data = pred_DOX, aes(x = conc.x, y = hr_norm), color = &quot;blue&quot;, size = 1) +
+  geom_vline(xintercept = LD50_val_DOX, color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  annotate(&quot;text&quot;, x = LD50_val_DOX, y = max(gpt_try_DOX$hr_norm, na.rm = TRUE),
+           label = paste0(&quot;LD50 = &quot;, signif(LD50_val_DOX, 3)),
+           color = &quot;red&quot;, angle = 90, vjust = -0.5, hjust = 1.1) +
+  scale_x_log10() +
+  theme_minimal()+
+  ggtitle(&quot;iPSC 87-1 Dose response Assay for DOX&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/DOX%20DRC%20first%20run-1.png" width="672" style="display: block; margin: auto;" />
+### 75-1 iPSC renee</p>
+<pre class="r"><code>T0_75_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p1_iPSC_T0_251026.xls&quot;, 
+    skip = 26)
+
+T0_75_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p2_iPSC_T0_251026.xls&quot;, 
+    skip = 26)
+
+T48_75_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p1_T48_251028.xlsx&quot;, 
+    skip = 26)
+
+T48_75_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p2_T48_251028.xlsx&quot;, 
+    skip = 26)
+
+iPSC_75_viability_data &lt;- 
+T0_75_iPSC_p1_viability %&gt;% 
+  mutate(Well=&quot;T0_p1&quot;) %&gt;% 
+  bind_rows(T0_75_iPSC_p2_viability %&gt;% 
+              mutate(Well=&quot;T0_p2&quot;)) %&gt;% 
+  bind_rows(T48_75_iPSC_p1_viability %&gt;% 
+              mutate(Well=&quot;T48_p1&quot;)) %&gt;% 
+   bind_rows(T48_75_iPSC_p2_viability %&gt;% 
+              mutate(Well=&quot;T48_p2&quot;)) %&gt;% 
+  dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
+<pre class="r"><code>iPSC_plate_map &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx&quot;, 
+    skip = 9)</code></pre>
+<pre class="r"><code>  base_df_75 &lt;-iPSC_plate_map %&gt;%
+  separate(tx_conc, into = c(&quot;tx&quot;,&quot;conc&quot;), sep = &quot;_&quot;) %&gt;% 
+  left_join(., iPSC_75_viability_data, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1, T0_p2, T48_p1,T48_p2), names_to = &quot;Time_plate&quot;) %&gt;%
+  separate(Time_plate, into = c(&quot;Time&quot;,&quot;plate&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(
+    tx  = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.05&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;0.75&quot;,&quot;1&quot;,&quot;5&quot;,&quot;10&quot;,&quot;na&quot;)),
+    Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T48&quot;))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed_75 &lt;- base_df_75 %&gt;%
+  group_by(plate,Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup()
+
+
+untx_per_plate_75 &lt;- processed_75 %&gt;%
+  filter(tx == &quot;untx&quot;) %&gt;%
+  group_by(plate, Time) %&gt;%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = &quot;drop&quot;
+  )
+
+
+
+with_untx_75 &lt;- processed_75 %&gt;%
+  left_join(untx_per_plate_75, by = c(&quot;plate&quot;, &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) &amp; untx_mean &gt; 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup()
+
+
+wide_norm_75 &lt;-with_untx_75 %&gt;%
+  dplyr::select(Well, tx, conc, Time, plate,norm_to_untx) %&gt;%
+  pivot_wider(id_cols = c(Well, tx, conc,plate), names_from = Time, values_from = norm_to_untx)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df_75 &lt;- wide_norm_75 %&gt;%
+  mutate(
+    hr_norm = case_when(
+      is.na(T0) | is.na(T48) ~ NA_real_,
+      T0 == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (T48 / T0) * 100
+    )
+  ) %&gt;%
+  filter(tx != &quot;blank&quot;)</code></pre>
+<pre class="r"><code>final_df_75 %&gt;% 
+  # dplyr::rename(&quot;conc&quot;=conc.x) %&gt;% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=tx))+
+  theme_bw()+
+  facet_wrap(~tx)+
+  ggtitle(&quot;Box plot of normalized 75 DRC&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/plot%2075-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="ipsc-renee" class="section level3">
+<h3>78-1 iPSC renee</h3>
+<pre class="r"><code>T0_78_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p1_iPSC_T0_251026.xls&quot;, 
+    skip = 26)
+
+T0_78_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p2_iPSC_T0_251026.xls&quot;, 
+    skip = 26)
+
+T48_78_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p1_T48_251028.xlsx&quot;, 
+    skip = 26)
+
+T48_78_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p2_T48_251028.xlsx&quot;, 
+    skip = 26)
+
+iPSC_78_viability_data &lt;- 
+T0_78_iPSC_p1_viability %&gt;% 
+  mutate(Well=&quot;T0_p1&quot;) %&gt;% 
+  bind_rows(T0_78_iPSC_p2_viability %&gt;% 
+              mutate(Well=&quot;T0_p2&quot;)) %&gt;% 
+  bind_rows(T48_78_iPSC_p1_viability %&gt;% 
+              mutate(Well=&quot;T48_p1&quot;)) %&gt;% 
+   bind_rows(T48_78_iPSC_p2_viability %&gt;% 
+              mutate(Well=&quot;T48_p2&quot;)) %&gt;% 
+  dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
+<pre class="r"><code>iPSC_plate_map &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx&quot;, 
+    skip = 9)</code></pre>
+<pre class="r"><code>  base_df_78 &lt;-iPSC_plate_map %&gt;%
+  separate(tx_conc, into = c(&quot;tx&quot;,&quot;conc&quot;), sep = &quot;_&quot;) %&gt;% 
+  left_join(., iPSC_78_viability_data, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1, T0_p2, T48_p1,T48_p2), names_to = &quot;Time_plate&quot;) %&gt;%
+  separate(Time_plate, into = c(&quot;Time&quot;,&quot;plate&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(
+    tx  = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.05&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;0.75&quot;,&quot;1&quot;,&quot;5&quot;,&quot;10&quot;,&quot;na&quot;)),
+    Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T48&quot;))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed_78 &lt;- base_df_78 %&gt;%
+  group_by(plate,Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup()
+
+
+untx_per_plate_78 &lt;- processed_78 %&gt;%
+  filter(tx == &quot;untx&quot;) %&gt;%
+  group_by(plate, Time) %&gt;%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = &quot;drop&quot;
+  )
+
+
+
+with_untx_78 &lt;- processed_78 %&gt;%
+  left_join(untx_per_plate_78, by = c(&quot;plate&quot;, &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) &amp; untx_mean &gt; 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup()
+
+
+wide_norm_78 &lt;-with_untx_78 %&gt;%
+  dplyr::select(Well, tx, conc, Time, plate,norm_to_untx) %&gt;%
+  pivot_wider(id_cols = c(Well, tx, conc,plate), names_from = Time, values_from = norm_to_untx)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df_78 &lt;- wide_norm_78 %&gt;%
+  mutate(
+    hr_norm = case_when(
+      is.na(T0) | is.na(T48) ~ NA_real_,
+      T0 == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (T48 / T0) * 100
+    )
+  ) %&gt;%
+  filter(tx != &quot;blank&quot;)</code></pre>
+<pre class="r"><code>final_df_78 %&gt;% 
+  # dplyr::rename(&quot;conc&quot;=conc.x) %&gt;% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=tx))+
+  theme_bw()+
+  facet_wrap(~tx)+
+  ggtitle(&quot;Box plot of normalized 78 DRC&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/plot%2078-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ipsc-renee-1" class="section level3">
+<h3>87-1 iPSC renee</h3>
+<pre class="r"><code>T0_87_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T0_251027.xlsx&quot;, 
+    skip = 26)
+
+T0_87_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T0_251027.xlsx&quot;, 
+    skip = 26)
+
+T48_87_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T48_251029.xlsx&quot;, 
+    skip = 26)
+
+T48_87_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T48_251029.xlsx&quot;, 
+    skip = 26)
+
+iPSC_87_viability_data &lt;- 
+T0_87_iPSC_p1_viability %&gt;% 
+  mutate(Well=&quot;T0_p1&quot;) %&gt;% 
+  bind_rows(T0_87_iPSC_p2_viability %&gt;% 
+              mutate(Well=&quot;T0_p2&quot;)) %&gt;% 
+  bind_rows(T48_87_iPSC_p1_viability %&gt;% 
+              mutate(Well=&quot;T48_p1&quot;)) %&gt;% 
+   bind_rows(T48_87_iPSC_p2_viability %&gt;% 
+              mutate(Well=&quot;T48_p2&quot;)) %&gt;% 
+  dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
+<pre class="r"><code>  base_df_87 &lt;-iPSC_plate_map %&gt;%
+  separate(tx_conc, into = c(&quot;tx&quot;,&quot;conc&quot;), sep = &quot;_&quot;) %&gt;% 
+  left_join(., iPSC_87_viability_data, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1, T0_p2, T48_p1,T48_p2), names_to = &quot;Time_plate&quot;) %&gt;%
+  separate(Time_plate, into = c(&quot;Time&quot;,&quot;plate&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(
+    tx  = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.05&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;0.75&quot;,&quot;1&quot;,&quot;5&quot;,&quot;10&quot;,&quot;na&quot;)),
+    Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T48&quot;))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed_87 &lt;- base_df_87 %&gt;%
+  group_by(plate,Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup()
+
+
+untx_per_plate_87 &lt;- processed_87 %&gt;%
+  filter(tx == &quot;untx&quot;) %&gt;%
+  group_by(plate, Time) %&gt;%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = &quot;drop&quot;
+  )
+
+
+
+with_untx_87 &lt;- processed_87 %&gt;%
+  left_join(untx_per_plate_87, by = c(&quot;plate&quot;, &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) &amp; untx_mean &gt; 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup()
+
+
+wide_norm_87 &lt;-with_untx_87 %&gt;%
+  dplyr::select(Well, tx, conc, Time, plate,norm_to_untx) %&gt;%
+  pivot_wider(id_cols = c(Well, tx, conc,plate), names_from = Time, values_from = norm_to_untx)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df_87 &lt;- wide_norm_87 %&gt;%
+  mutate(
+    hr_norm = case_when(
+      is.na(T0) | is.na(T48) ~ NA_real_,
+      T0 == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (T48 / T0) * 100
+    )
+  ) %&gt;%
+  filter(tx != &quot;blank&quot;)</code></pre>
+<pre class="r"><code>final_df_87 %&gt;% 
+  # dplyr::rename(&quot;conc&quot;=conc.x) %&gt;% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=tx))+
+  theme_bw()+
+  facet_wrap(~tx)+
+  ggtitle(&quot;Box plot of normalized 87 DRC&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/plot%2087-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="plot-function" class="section level5">
+<h5>plot function</h5>
+<pre class="r"><code>plot_drc &lt;- function(data, tx_name, resp_col = &quot;hr_norm&quot;, title = NULL, color_line = &quot;blue&quot;) {
+  # Filter and prepare data
+  df_sub &lt;- data %&gt;%
+    filter(tx == tx_name) %&gt;%
+    mutate(
+      conc = as.numeric(as.character(conc)),
+      response = as.numeric(.data[[resp_col]])
+    )
+  
+  # Fit dose-response model
+  model &lt;- drm(response ~ conc, data = df_sub, fct = L.4(fixed = c(NA, NA, 100, NA)))
+  
+  # Generate log-spaced predictions
+  pred &lt;- data.frame(conc = exp(seq(
+    log(min(df_sub$conc[df_sub$conc &gt; 0], na.rm = TRUE)),
+    log(max(df_sub$conc, na.rm = TRUE)),
+    length.out = 100
+  )))
+  pred$response &lt;- predict(model, newdata = pred)
+  
+  # LD50
+  LD50 &lt;- ED(model, 50, interval = &quot;delta&quot;)
+  LD50_val &lt;- as.numeric(LD50[1, 1])
+  
+  # Create title if missing
+  if (is.null(title)) {
+    title &lt;- paste(&quot;Dose–Response Curve for&quot;, trt_name)
+  }
+  
+  # Plot
+  p &lt;- ggplot(df_sub, aes(x = conc, y = response)) +
+    geom_point(size = 2, alpha = 0.8) +
+    geom_line(data = pred, aes(x = conc, y = response), color = color_line, size = 1) +
+    geom_vline(xintercept = LD50_val, color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+    annotate(
+      &quot;text&quot;,
+      x = LD50_val,
+      y = max(df_sub$response, na.rm = TRUE),
+      label = paste0(&quot;LD50 = &quot;, signif(LD50_val, 3)),
+      color = &quot;red&quot;, angle = 90, vjust = -0.5, hjust = 1.1
+    ) +
+    scale_x_log10() +
+    theme_minimal(base_size = 14) +
+    labs(title = title, x = &quot;Concentration&quot;, y = &quot;Response (normalized)&quot;)
+  
+  # Return list so you can use both plot and model
+  return(list(plot = p, model = model, LD50 = LD50))
+}</code></pre>
+</div>
+</div>
+<div id="all-cx-plots-for-ipscs" class="section level3">
+<h3>All CX plots for iPSCs</h3>
+<pre class="r"><code>CX_75_iPSC &lt;- plot_drc(final_df_75, tx_name = &quot;CX&quot;, title = &quot;iPSC 75-1 Dose Response for CX&quot;)</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error    Lower    Upper
+e:1:50 0.196866   0.077915 0.036398 0.357335</code></pre>
+<pre class="r"><code>CX_75_iPSC$plot</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>CX_78_iPSC &lt;- plot_drc(final_df_78, tx_name = &quot;CX&quot;, title = &quot;iPSC 78-1 Dose Response for CX&quot;)</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error    Lower    Upper
+e:1:50 0.165140   0.044385 0.073727 0.256553</code></pre>
+<pre class="r"><code>CX_78_iPSC$plot</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>CX_87_iPSC &lt;- plot_drc(final_df_87, tx_name = &quot;CX&quot;, title = &quot;iPSC 87-1 Dose Response for CX&quot;)</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error    Lower    Upper
+e:1:50 0.559776   0.040025 0.477168 0.642383</code></pre>
+<pre class="r"><code>CX_87_iPSC$plot</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(
+  final_df_78 %&gt;% filter(tx == &quot;CX&quot;) %&gt;%
+    mutate(conc = as.numeric(as.character(conc))),
+  aes(x = conc, y = hr_norm)
+) +
+  geom_point(size = 2) +
+  stat_smooth(
+    method = drm,
+    method.args = list(fct = L.4(fixed = c(NA, NA, 100, NA))),
+    se = FALSE,
+    color = &quot;blue&quot;
+  ) +
+  scale_x_log10() +
+  theme_minimal() +
+  labs(title = &quot;CX Dose–Response&quot;, x = &quot;Concentration&quot;, y = &quot;Normalized viability (%)&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># write_csv(final_df_87,&quot;data/iPSC_87_DRC_20251029.csv&quot;)
+# write_csv(final_df_75,&quot;data/iPSC_75_DRC_20251028.csv&quot;)
+# write_csv(final_df_78,&quot;data/iPSC_78_DRC_20251028.csv&quot;)</code></pre>
+</div>
+<div id="cardiomyocyte-treatment" class="section level3">
+<h3>Cardiomyocyte treatment</h3>
+<pre class="r"><code>CM_platemap &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/CM_cell_viability_platemap.xlsx&quot;, 
+    skip = 9
+    )</code></pre>
+<pre class="r"><code>T0_87_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_87_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p2_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_87_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p3_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_87_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p4_T0_251028.xlsx&quot;, 
+    skip = 26)
+T3_87_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T3_251028.xlsx&quot;, 
+    skip = 26)
+
+T24_87_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+    skip = 26)
+
+T48_87_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_CM_p3_T48_251030.xlsx&quot;, 
+    skip = 26)
+
+# T96_87_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p4_T96_251101.xlsx&quot;, 
+#     skip = 26)
+
+CM_combo_87 &lt;- T0_87_CM_p1_viability %&gt;% 
+  mutate(Well=&quot;T0_p1&quot;) %&gt;% 
+  bind_rows(T0_87_CM_p2_viability %&gt;% 
+              mutate(Well=&quot;T0_p2&quot;)) %&gt;% 
+  bind_rows(T0_87_CM_p3_viability %&gt;% 
+              mutate(Well=&quot;T0_p3&quot;)) %&gt;% 
+   bind_rows(T0_87_CM_p4_viability %&gt;% 
+              mutate(Well=&quot;T0_p4&quot;)) %&gt;% 
+  bind_rows(T3_87_CM_p1_viability %&gt;% 
+              mutate(Well=&quot;T3_p1&quot;)) %&gt;% 
+  bind_rows(T24_87_CM_p2_viability %&gt;% 
+              mutate(Well=&quot;T24_p2&quot;)) %&gt;% 
+  bind_rows(T48_87_CM_p3_viability %&gt;%
+              mutate(Well=&quot;T48_p3&quot;)) %&gt;%
+  #    bind_rows(T96_87_CM_p4_viability %&gt;% 
+  #             mutate(Well=&quot;T96_p4&quot;)) %&gt;%
+  dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
+<pre class="r"><code>T0_78_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_78_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p2_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_78_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p3_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_78_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p4_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T3_78_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T3_251028.xlsx&quot;, 
+    skip = 26)
+
+T24_78_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+    skip = 26)
+
+T48_78_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p3_T48_251030.xlsx&quot;, 
+    skip = 26)
+
+# T96_78_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p4_T96_251101.xlsx&quot;, 
+#     skip = 26)
+
+
+CM_combo_78 &lt;- T0_78_CM_p1_viability %&gt;% 
+  mutate(Well=&quot;T0_p1&quot;) %&gt;% 
+  bind_rows(T0_78_CM_p2_viability %&gt;% 
+              mutate(Well=&quot;T0_p2&quot;)) %&gt;% 
+  bind_rows(T0_78_CM_p3_viability %&gt;% 
+              mutate(Well=&quot;T0_p3&quot;)) %&gt;% 
+   bind_rows(T0_78_CM_p4_viability %&gt;% 
+              mutate(Well=&quot;T0_p4&quot;)) %&gt;% 
+  bind_rows(T3_78_CM_p1_viability %&gt;% 
+              mutate(Well=&quot;T3_p1&quot;)) %&gt;% 
+  bind_rows(T24_78_CM_p2_viability %&gt;% 
+              mutate(Well=&quot;T24_p2&quot;)) %&gt;% 
+  bind_rows(T48_78_CM_p3_viability %&gt;%
+              mutate(Well=&quot;T48_p3&quot;)) %&gt;%
+  #    bind_rows(T96_78_CM_p4_viability %&gt;% 
+  #             mutate(Well=&quot;T96_p4&quot;)) %&gt;%
+  dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
+<pre class="r"><code>T0_75_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p1_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_75_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p2_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+T0_75_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p3_T0_251028.xlsx&quot;, 
+    skip = 26)
+
+
+T24_75_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+    skip = 26)
+
+T48_75_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_CM_p3_T48_251030.xlsx&quot;, 
+    skip = 26)
+
+
+CM_combo_75 &lt;- T0_75_CM_p1_viability %&gt;% 
+  mutate(Well=&quot;T0_p1&quot;) %&gt;% 
+  bind_rows(T0_75_CM_p2_viability %&gt;% 
+              mutate(Well=&quot;T0_p2&quot;)) %&gt;% 
+  bind_rows(T0_75_CM_p3_viability %&gt;% 
+              mutate(Well=&quot;T0_p3&quot;)) %&gt;% 
+  # bind_rows(T3_75_CM_p1_viability %&gt;% 
+  #             mutate(Well=&quot;T3_p1&quot;)) %&gt;% 
+  bind_rows(T24_75_CM_p2_viability %&gt;% 
+              mutate(Well=&quot;T24_p2&quot;)) %&gt;% 
+  bind_rows(T48_75_CM_p3_viability %&gt;%
+              mutate(Well=&quot;T48_p3&quot;)) %&gt;%
+  dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
+  pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
+  pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
+<div id="cm" class="section level4">
+<h4>87 CM</h4>
+<pre class="r"><code>base_df_87_CM &lt;- 
+CM_platemap %&gt;%
+  separate(col = tx_conc, into = c(&quot;tx&quot;, &quot;conc&quot;), sep = &quot;_&quot;) %&gt;%
+  left_join(., CM_combo_87, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = &quot;Time_plate&quot;) %&gt;%
+  separate(Time_plate, into=c(&quot;Time&quot;,&quot;plate&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(
+    tx  = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;2.5&quot;,&quot;blank&quot;)),
+    Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;,&quot;T96&quot;))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_87_CM &lt;- base_df_87_CM %&gt;%
+  group_by(plate,Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup() %&gt;% 
+  ##removing a well with no cells
+  dplyr::filter(!(plate == 3 &amp; Well == &quot;C7&quot;)) %&gt;% 
+  dplyr::filter(!(plate == 3 &amp; Well == &quot;C8&quot;))
+
+## calculate untx values to normalize all other wells
+untx_per_plate_87_CM &lt;- processed_87_CM %&gt;%
+  filter(tx == &quot;untx&quot;) %&gt;%
+  group_by(plate, Time) %&gt;%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = &quot;drop&quot;
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_87_CM &lt;- processed_87_CM %&gt;%
+  left_join(untx_per_plate_87_CM, by = c(&quot;plate&quot;, &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) &amp; untx_mean &gt; 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_87_CM &lt;- with_untx_87_CM %&gt;%
+  # Keep only relevant columns
+  filter(tx != &quot;blank&quot;) %&gt;%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %&gt;%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = unique(Time))) %&gt;%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %&gt;%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = &quot;Time&quot;,
+    values_to = &quot;value&quot;
+  ) %&gt;%
+  group_by(Well, tx, conc, plate) %&gt;%
+  mutate(
+    T0_value = value[Time == &quot;T0&quot;],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) &amp; T0_value &gt; 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup() %&gt;%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+# norm_Tx_over_T0_87_CM &lt;-
+# with_untx_87_CM %&gt;%
+#   filter(tx != &quot;blank&quot;) %&gt;%
+#   dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %&gt;%
+#   pivot_wider(
+#     id_cols = c(Well, tx, conc, plate),
+#     names_from = Time,
+#     values_from = norm_to_untx
+#   ) %&gt;%
+#   mutate(
+#     norm_T3_T0  = if_else(!is.na(T0) &amp; T0 &gt; 0, T3  / T0, NA_real_),
+#     norm_T24_T0 = if_else(!is.na(T0) &amp; T0 &gt; 0, T24 / T0, NA_real_))#,
+#     # norm_T48_T0 = if_else(!is.na(T0) &amp; T0 &gt; 0, T48 / T0, NA_real_),
+#     # norm_T96_T0 = if_else(!is.na(T0) &amp; T0 &gt; 0, T96 / T0, NA_real_)
+#   )
+# 
+# norm_Tx_over_T0_87_CM_long &lt;- norm_Tx_over_T0_87_CM %&gt;%
+#   dplyr::select(Well, tx, conc, plate, starts_with(&quot;norm_T&quot;)) %&gt;%
+#   pivot_longer(
+#     cols = starts_with(&quot;norm_T&quot;),
+#     names_to = &quot;norm_type&quot;,
+#     values_to = &quot;Tx_over_T0&quot;
+#   )</code></pre>
+</div>
+<div id="plot-87" class="section level4">
+<h4>plot 87</h4>
+<pre class="r"><code>norm_Tx_over_T0_87_CM %&gt;% 
+  mutate(Time=factor(Time, levels = c(&quot;T0&quot;, &quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;,&quot;T96&quot;))) %&gt;% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle(&quot;Treatment over time 87&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cm-1" class="section level4">
+<h4>75 CM</h4>
+<pre class="r"><code>base_df_75_CM &lt;- 
+CM_platemap %&gt;%
+  separate(col = tx_conc, into = c(&quot;tx&quot;, &quot;conc&quot;), sep = &quot;_&quot;) %&gt;%
+  left_join(., CM_combo_75, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = &quot;Time_plate&quot;) %&gt;%
+  separate(Time_plate, into=c(&quot;Time&quot;,&quot;plate&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(
+    tx  = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;2.5&quot;,&quot;blank&quot;)),
+    Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;,&quot;T96&quot;))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_75_CM &lt;- base_df_75_CM %&gt;%
+  group_by(plate,Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup()
+
+## calculate untx values to normalize all other wells
+untx_per_plate_75_CM &lt;- processed_75_CM %&gt;%
+  filter(tx == &quot;untx&quot;) %&gt;%
+  group_by(plate, Time) %&gt;%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = &quot;drop&quot;
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_75_CM &lt;- processed_75_CM %&gt;%
+  left_join(untx_per_plate_75_CM, by = c(&quot;plate&quot;, &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) &amp; untx_mean &gt; 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_75_CM &lt;- with_untx_75_CM %&gt;%
+  # Keep only relevant columns
+  filter(tx != &quot;blank&quot;) %&gt;%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %&gt;%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = unique(Time))) %&gt;%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %&gt;%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = &quot;Time&quot;,
+    values_to = &quot;value&quot;
+  ) %&gt;%
+  group_by(Well, tx, conc, plate) %&gt;%
+  mutate(
+    T0_value = value[Time == &quot;T0&quot;],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) &amp; T0_value &gt; 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup() %&gt;%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+# norm_Tx_over_T0_75_CM &lt;-
+# with_untx_75_CM %&gt;%
+#   filter(tx != &quot;blank&quot;) %&gt;%
+#   dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %&gt;%
+#   pivot_wider(
+#     id_cols = c(Well, tx, conc, plate),
+#     names_from = Time,
+#     values_from = norm_to_untx
+#   ) %&gt;%
+#   mutate(
+#     norm_T3_T0  = if_else(!is.na(T0) &amp; T0 &gt; 0, T3  / T0, NA_real_),
+#     norm_T24_T0 = if_else(!is.na(T0) &amp; T0 &gt; 0, T24 / T0, NA_real_))#,
+#     # norm_T48_T0 = if_else(!is.na(T0) &amp; T0 &gt; 0, T48 / T0, NA_real_),
+#     # norm_T96_T0 = if_else(!is.na(T0) &amp; T0 &gt; 0, T96 / T0, NA_real_)
+#   )
+# 
+# norm_Tx_over_T0_75_CM_long &lt;- norm_Tx_over_T0_75_CM %&gt;%
+#   dplyr::select(Well, tx, conc, plate, starts_with(&quot;norm_T&quot;)) %&gt;%
+#   pivot_longer(
+#     cols = starts_with(&quot;norm_T&quot;),
+#     names_to = &quot;norm_type&quot;,
+#     values_to = &quot;Tx_over_T0&quot;
+#   )</code></pre>
+</div>
+<div id="plot-75" class="section level4">
+<h4>plot 75</h4>
+<pre class="r"><code>norm_Tx_over_T0_75_CM %&gt;% 
+  mutate(Time=factor(Time, levels = c(&quot;T0&quot;, &quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;,&quot;T96&quot;))) %&gt;% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle(&quot;Treatment over time for 75&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" />
+#### 78 CM</p>
+<pre class="r"><code>base_df_78_CM &lt;- 
+CM_platemap %&gt;%
+  separate(col = tx_conc, into = c(&quot;tx&quot;, &quot;conc&quot;), sep = &quot;_&quot;) %&gt;%
+  left_join(., CM_combo_78, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = &quot;Time_plate&quot;) %&gt;%
+  separate(Time_plate, into=c(&quot;Time&quot;,&quot;plate&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(
+    tx  = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),   # check these levels match your data
+    conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;2.5&quot;,&quot;blank&quot;)),
+    Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;,&quot;T96&quot;))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_78_CM &lt;- base_df_78_CM %&gt;%
+  group_by(plate,Time) %&gt;%
+  mutate(
+    blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %&gt;%
+  ungroup()
+
+## calculate untx values to normalize all other wells
+untx_per_plate_78_CM &lt;- processed_78_CM %&gt;%
+  filter(tx == &quot;untx&quot;) %&gt;%
+  group_by(plate, Time) %&gt;%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = &quot;drop&quot;
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_78_CM &lt;- processed_78_CM %&gt;%
+  left_join(untx_per_plate_78_CM, by = c(&quot;plate&quot;, &quot;Time&quot;)) %&gt;%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) &amp; untx_mean &gt; 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_78_CM &lt;- with_untx_78_CM %&gt;%
+  # Keep only relevant columns
+  filter(tx != &quot;blank&quot;) %&gt;%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %&gt;%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = c(&quot;T0&quot;,&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;))) %&gt;%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %&gt;%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = &quot;Time&quot;,
+    values_to = &quot;value&quot;
+  ) %&gt;%
+  group_by(Well, tx, conc, plate) %&gt;%
+  mutate(
+    T0_value = value[Time == &quot;T0&quot;],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) &amp; T0_value &gt; 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %&gt;%
+  ungroup() %&gt;%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)</code></pre>
+</div>
+<div id="plot-78" class="section level4">
+<h4>plot 78</h4>
+<pre class="r"><code>norm_Tx_over_T0_78_CM %&gt;% 
+  mutate(Time=factor(Time, levels = c(&quot;T0&quot;, &quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;,&quot;T96&quot;))) %&gt;% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle(&quot;Treatment over time for 78&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>all_lines &lt;- bind_rows(
+  norm_Tx_over_T0_87_CM %&gt;% mutate(cell_line = &quot;87&quot;),
+  norm_Tx_over_T0_75_CM %&gt;% mutate(cell_line = &quot;75&quot;),
+  norm_Tx_over_T0_78_CM %&gt;% mutate(cell_line = &quot;78&quot;)
+)
+summ_all &lt;- all_lines %&gt;%
+  group_by(cell_line, tx, conc, Time) %&gt;%
+  summarise(
+    mean_Tx_over_T0 = mean(Tx_over_T0, na.rm = TRUE),
+    se_Tx_over_T0 = sd(Tx_over_T0, na.rm = TRUE) / sqrt(n()),
+    .groups = &quot;drop&quot;
+  )</code></pre>
+<div id="all-normalized-to-untx-plot" class="section level5">
+<h5>All normalized to untx plot</h5>
+<pre class="r"><code>summ_all %&gt;% 
+  dplyr::filter(tx %in% c(&quot;CX&quot;,&quot;DOX&quot;,&quot;VEH&quot;)) %&gt;% 
+  mutate(Time=factor(Time, levels=c(&quot;T0&quot;,&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;)),
+         group=paste0(conc,&quot;_&quot;,tx)) %&gt;%
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  theme_classic()+
+  ggtitle(&quot;Treatment over time for all lines just to untx&quot;)+
+  coord_cartesian(ylim = c(0,115))</code></pre>
+<p><img src="figure/CX-revision.Rmd/plot%20all-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="normalizing-to-veh-too" class="section level4">
+<h4>Normalizing to VEH too</h4>
+<pre class="r"><code>normalize_to_vehicle &lt;- function(platemap_df, combo_df) {
+  
+  base_df &lt;- platemap_df %&gt;%
+    separate(col = tx_conc, into = c(&quot;tx&quot;, &quot;conc&quot;), sep = &quot;_&quot;) %&gt;%
+    left_join(., combo_df, by = &quot;Well&quot;) %&gt;%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = &quot;Time_plate&quot;) %&gt;%
+    separate(Time_plate, into = c(&quot;Time&quot;, &quot;plate&quot;), sep = &quot;_&quot;) %&gt;%
+    mutate(
+      tx = factor(tx, levels = c(&quot;CX&quot;, &quot;DOX&quot;, &quot;VEH&quot;, &quot;untx&quot;, &quot;blank&quot;)),
+      conc = factor(conc, levels = c(&quot;0&quot;,&quot;0.1&quot;,&quot;0.5&quot;,&quot;2.5&quot;,&quot;blank&quot;)),
+      Time = factor(Time, levels = c(&quot;T0&quot;, &quot;T3&quot;, &quot;T24&quot;, &quot;T48&quot;, &quot;T96&quot;))
+    )
+  
+  # 1️⃣ Subtract blank per Time and clip negatives
+  processed &lt;- base_df %&gt;%
+    group_by(plate, Time) %&gt;%
+    mutate(
+      blank_mean = mean(value[tx == &quot;blank&quot;], na.rm = TRUE),
+      adj_reading = pmax(value - blank_mean, 0)
+    ) %&gt;%
+    ungroup()
+  
+  # 2️⃣ Compute VEH means per plate/time/concentration
+  veh_per_plate &lt;- processed %&gt;%
+    dplyr::filter(tx == &quot;VEH&quot;) %&gt;%
+    group_by(plate, Time, conc) %&gt;%
+    summarise(
+      veh_mean = mean(adj_reading, na.rm = TRUE),
+      n_veh = n(),
+      .groups = &quot;drop&quot;
+    )
+  
+  # 3️⃣ Join VEH means to all wells &amp; normalize
+  with_veh &lt;- processed %&gt;%
+    left_join(veh_per_plate, by = c(&quot;plate&quot;, &quot;Time&quot;, &quot;conc&quot;)) %&gt;%
+    mutate(
+      norm_to_veh = if_else(
+        !is.na(veh_mean) &amp; veh_mean &gt; 0,
+        (adj_reading / veh_mean) * 100,
+        NA_real_
+      )
+    ) %&gt;%
+    ungroup()
+  
+  # 4️⃣ Normalize each timepoint to T0 (Tx/T0)
+  norm_Tx_over_T0 &lt;- with_veh %&gt;%
+    dplyr::filter(tx != &quot;blank&quot;) %&gt;%
+    dplyr::select(Well, tx, conc, Time, plate, norm_to_veh) %&gt;%
+    mutate(Time = factor(Time, levels = c(&quot;T0&quot;, &quot;T3&quot;, &quot;T24&quot;, &quot;T48&quot;))) %&gt;%
+    pivot_wider(
+      id_cols = c(Well, tx, conc, plate),
+      names_from = Time,
+      values_from = norm_to_veh
+    ) %&gt;%
+    pivot_longer(
+      cols = -c(Well, tx, conc, plate),
+      names_to = &quot;Time&quot;,
+      values_to = &quot;value&quot;
+    ) %&gt;%
+    group_by(Well, tx, conc, plate) %&gt;%
+    mutate(
+      T0_value = value[Time == &quot;T0&quot;],
+      Tx_over_T0 = if_else(
+        !is.na(T0_value) &amp; T0_value &gt; 0,
+        (value / T0_value) * 100,
+        NA_real_
+      )
+    ) %&gt;%
+    ungroup() %&gt;%
+    dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+  
+  return(norm_Tx_over_T0)
+}</code></pre>
+<pre class="r"><code>VEH_norm_plot_CM_75 &lt;- normalize_to_vehicle(CM_platemap,CM_combo_75)
+
+VEH_norm_plot_CM_78 &lt;- normalize_to_vehicle(CM_platemap,CM_combo_78)
+
+VEH_norm_plot_CM_87 &lt;- normalize_to_vehicle(CM_platemap,CM_combo_87)</code></pre>
+<div id="veh-normed-plot" class="section level5">
+<h5>VEH normed plot</h5>
+<pre class="r"><code>all_lines_VEH_norm &lt;- bind_rows(
+  VEH_norm_plot_CM_87 %&gt;% mutate(cell_line = &quot;87&quot;),
+  VEH_norm_plot_CM_75 %&gt;% mutate(cell_line = &quot;75&quot;),
+  VEH_norm_plot_CM_78 %&gt;% mutate(cell_line = &quot;78&quot;)
+)
+summ_all_VEH_norm &lt;- all_lines_VEH_norm %&gt;%
+  group_by(cell_line, tx, conc, Time) %&gt;%
+  summarise(
+    mean_Tx_over_T0 = mean(Tx_over_T0, na.rm = TRUE),
+    se_Tx_over_T0 = sd(Tx_over_T0, na.rm = TRUE) / sqrt(n()),
+    .groups = &quot;drop&quot;
+  )</code></pre>
+<pre class="r"><code>summ_all_VEH_norm %&gt;% 
+  dplyr::filter(tx %in% c(&quot;CX&quot;,&quot;DOX&quot;,&quot;VEH&quot;)) %&gt;% 
+  mutate(Time=factor(Time, levels=c(&quot;T0&quot;,&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;)),
+         group=paste0(conc,&quot;_&quot;,tx)) %&gt;%
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  theme_classic()+
+  ggtitle(&quot;Treatment over time for all lines VEH norm&quot;)+
+  coord_cartesian(ylim = c(0,125))</code></pre>
+<p><img src="figure/CX-revision.Rmd/plot%20all%20VEH%20norm-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26100)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] drc_3.0-1       MASS_7.3-65     readxl_1.4.5    lubridate_1.9.4
+ [5] forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4     purrr_1.1.0    
+ [9] readr_2.1.5     tidyr_1.3.1     tibble_3.3.0    ggplot2_3.5.2  
+[13] tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6       xfun_0.52          bslib_0.9.0        processx_3.8.6    
+ [5] lattice_0.22-7     callr_3.7.6        tzdb_0.5.0         vctrs_0.6.5       
+ [9] tools_4.4.2        ps_1.9.1           generics_0.1.4     sandwich_3.1-1    
+[13] pkgconfig_2.0.3    Matrix_1.7-3       RColorBrewer_1.1-3 lifecycle_1.0.4   
+[17] compiler_4.4.2     farver_2.1.2       git2r_0.36.2       codetools_0.2-20  
+[21] getPass_0.2-4      carData_3.0-5      httpuv_1.6.16      htmltools_0.5.8.1 
+[25] sass_0.4.10        yaml_2.3.10        Formula_1.2-5      later_1.4.2       
+[29] pillar_1.11.0      car_3.1-3          jquerylib_0.1.4    whisker_0.4.1     
+[33] cachem_1.1.0       abind_1.4-8        multcomp_1.4-28    nlme_3.1-168      
+[37] gtools_3.9.5       tidyselect_1.2.1   digest_0.6.37      mvtnorm_1.3-3     
+[41] stringi_1.8.7      labeling_0.4.3     splines_4.4.2      rprojroot_2.1.1   
+[45] fastmap_1.2.0      grid_4.4.2         cli_3.6.5          magrittr_2.0.3    
+[49] survival_3.8-3     dichromat_2.0-0.1  TH.data_1.1-4      withr_3.0.2       
+[53] scales_1.4.0       promises_1.3.3     plotrix_3.8-4      timechange_0.3.0  
+[57] rmarkdown_2.29     httr_1.4.7         cellranger_1.1.0   zoo_1.8-14        
+[61] hms_1.1.3          evaluate_1.0.5     knitr_1.50         mgcv_1.9-3        
+[65] rlang_1.1.6        Rcpp_1.1.0         glue_1.8.0         rstudioapi_0.17.1 
+[69] jsonlite_2.0.0     R6_2.6.1           fs_1.6.6          </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
