@@ -213,6 +213,7 @@ gpt_try_DOX %>%
   ggtitle("iPSC 87-1 Dose response Assay for DOX")
 ```
 ### 75-1 iPSC renee
+
 ```{r 75-1 iPSC me}
 T0_75_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p1_iPSC_T0_251026.xls", 
     skip = 26)
@@ -1127,7 +1128,7 @@ summ_all <- all_lines %>%
 ```{r plot all}
 
 summ_all %>% 
-  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
+  dplyr::filter(tx %in% c("CX","DOX")) %>% 
   mutate(Time=factor(Time, levels=c("T0","T3","T24","T48")),
          group=paste0(conc,"_",tx)) %>%
   ggplot(aes(x=group,y=mean_Tx_over_T0))+
