@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree992896512f583b7ff7a017a1771a3afa6f0e4aedtargetblank9928965a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree45f92fd4fe4ffb72a5102e5ba7b315f98cb0d825targetblank45f92fda">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/992896512f583b7ff7a017a1771a3afa6f0e4aed" target="_blank">9928965</a>
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/45f92fd4fe4ffb72a5102e5ba7b315f98cb0d825" target="_blank">45f92fd</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree992896512f583b7ff7a017a1771a3afa6f0e4aedtargetblank9928965a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree45f92fd4fe4ffb72a5102e5ba7b315f98cb0d825targetblank45f92fda"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/992896512f583b7ff7a017a1771a3afa6f0e4aed" target="_blank">9928965</a>.
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/45f92fd4fe4ffb72a5102e5ba7b315f98cb0d825" target="_blank">45f92fd</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -551,9 +551,9 @@ Ignored files:
     Ignored:    .Rproj.user/
 
 Untracked files:
-    Untracked:  data/iPSC_75_DRC_20251028.csv
-    Untracked:  data/iPSC_78_DRC_20251028.csv
-    Untracked:  data/iPSC_87_DRC_20251029.csv
+    Untracked:  data/Presto_blue_results/CM_cell_viability_platemap.xlsx
+    Untracked:  data/Presto_blue_results/Plate_map.xlsx
+    Untracked:  data/Presto_blue_results/iPSC_cell_viability_platemap.xlsx
 
 Unstaged changes:
     Modified:   CX_revison.Rproj
@@ -601,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/45f92fd4fe4ffb72a5102e5ba7b315f98cb0d825/analysis/CX-revision.Rmd" target="_blank">45f92fd</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-10-31
+</td>
+<td>
+update links
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/reneeisnowhere/CX_revision/10b921a284276679ac55706b2c321da56e3257b5/docs/CX-revision.html" target="_blank">10b921a</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-10-31
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -674,10 +708,10 @@ library(readxl)
 library(readr)
 library(drc)</code></pre>
 <p>adding input data</p>
-<pre class="r"><code>X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_0hr_ipsc_96wellplate_baseline_no_treatment_10-14-2025_251014.xls&quot;, 
+<pre class="r"><code>X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 &lt;- read_excel(&quot;data/Presto_blue_results/87-1_0hr_ipsc_96wellplate_baseline_no_treatment_10-14-2025_251014.xls&quot;, 
     skip = 34)
 
-X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_48hr_ipsc_96wellplate_CX-DOX-Veh_10-16-2025_251016.xls&quot;, 
+X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 &lt;- read_excel(&quot;data/Presto_blue_results/87-1_48hr_ipsc_96wellplate_CX-DOX-Veh_10-16-2025_251016.xls&quot;, 
     skip = 34)
 
 combo_time_data &lt;- 
@@ -689,7 +723,7 @@ X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 %&gt;%
   dplyr::rename(&quot;Time&quot;=Well) %&gt;% 
   pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
   pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time&quot;, values_from = &quot;reading&quot;)</code></pre>
-<pre class="r"><code>Plate_map &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Plate_map.xlsx&quot;)</code></pre>
+<pre class="r"><code>Plate_map &lt;- read_excel(&quot;data/Presto_blue_results/Plate_map.xlsx&quot;)</code></pre>
 <pre class="r"><code>  base_df &lt;- Plate_map %&gt;%
   pivot_longer(cols = everything(), names_to = &quot;Well&quot;) %&gt;%
   separate(col = value, into = c(&quot;trt&quot;, &quot;conc&quot;), sep = &quot;_&quot;) %&gt;%
@@ -1027,16 +1061,16 @@ reneeisnowhere
 </div>
 <div id="ipsc-renee" class="section level3">
 <h3>75-1 iPSC renee</h3>
-<pre class="r"><code>T0_75_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p1_iPSC_T0_251026.xls&quot;, 
+<pre class="r"><code>T0_75_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_p1_iPSC_T0_251026.xls&quot;, 
     skip = 26)
 
-T0_75_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p2_iPSC_T0_251026.xls&quot;, 
+T0_75_iPSC_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_p2_iPSC_T0_251026.xls&quot;, 
     skip = 26)
 
-T48_75_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p1_T48_251028.xlsx&quot;, 
+T48_75_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_iPSC_p1_T48_251028.xlsx&quot;, 
     skip = 26)
 
-T48_75_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p2_T48_251028.xlsx&quot;, 
+T48_75_iPSC_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_iPSC_p2_T48_251028.xlsx&quot;, 
     skip = 26)
 
 iPSC_75_viability_data &lt;- 
@@ -1051,7 +1085,7 @@ T0_75_iPSC_p1_viability %&gt;%
   dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
   pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
   pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
-<pre class="r"><code>iPSC_plate_map &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx&quot;, 
+<pre class="r"><code>iPSC_plate_map &lt;- read_excel(&quot;data/Presto_blue_results/iPSC_cell_viability_platemap.xlsx&quot;, 
     skip = 9)</code></pre>
 <pre class="r"><code>  base_df_75 &lt;-iPSC_plate_map %&gt;%
   separate(tx_conc, into = c(&quot;tx&quot;,&quot;conc&quot;), sep = &quot;_&quot;) %&gt;% 
@@ -1159,16 +1193,16 @@ reneeisnowhere
 </div>
 <div id="ipsc-renee-1" class="section level3">
 <h3>78-1 iPSC renee</h3>
-<pre class="r"><code>T0_78_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p1_iPSC_T0_251026.xls&quot;, 
+<pre class="r"><code>T0_78_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_p1_iPSC_T0_251026.xls&quot;, 
     skip = 26)
 
-T0_78_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p2_iPSC_T0_251026.xls&quot;, 
+T0_78_iPSC_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_p2_iPSC_T0_251026.xls&quot;, 
     skip = 26)
 
-T48_78_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p1_T48_251028.xlsx&quot;, 
+T48_78_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC_p1_T48_251028.xlsx&quot;, 
     skip = 26)
 
-T48_78_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p2_T48_251028.xlsx&quot;, 
+T48_78_iPSC_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC_p2_T48_251028.xlsx&quot;, 
     skip = 26)
 
 iPSC_78_viability_data &lt;- 
@@ -1183,7 +1217,7 @@ T0_78_iPSC_p1_viability %&gt;%
   dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
   pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
   pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
-<pre class="r"><code>iPSC_plate_map &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx&quot;, 
+<pre class="r"><code>iPSC_plate_map &lt;- read_excel(&quot;data/Presto_blue_results/iPSC_cell_viability_platemap.xlsx&quot;, 
     skip = 9)</code></pre>
 <pre class="r"><code>  base_df_78 &lt;-iPSC_plate_map %&gt;%
   separate(tx_conc, into = c(&quot;tx&quot;,&quot;conc&quot;), sep = &quot;_&quot;) %&gt;% 
@@ -1291,16 +1325,16 @@ reneeisnowhere
 </div>
 <div id="ipsc-renee-2" class="section level3">
 <h3>87-1 iPSC renee</h3>
-<pre class="r"><code>T0_87_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T0_251027.xlsx&quot;, 
+<pre class="r"><code>T0_87_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC_p1_T0_251027.xlsx&quot;, 
     skip = 26)
 
-T0_87_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T0_251027.xlsx&quot;, 
+T0_87_iPSC_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC_p2_T0_251027.xlsx&quot;, 
     skip = 26)
 
-T48_87_iPSC_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T48_251029.xlsx&quot;, 
+T48_87_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC_p1_T48_251029.xlsx&quot;, 
     skip = 26)
 
-T48_87_iPSC_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T48_251029.xlsx&quot;, 
+T48_87_iPSC_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC_p2_T48_251029.xlsx&quot;, 
     skip = 26)
 
 iPSC_87_viability_data &lt;- 
@@ -1666,27 +1700,27 @@ reneeisnowhere
 </div>
 <div id="cardiomyocyte-treatment" class="section level3">
 <h3>Cardiomyocyte treatment</h3>
-<pre class="r"><code>CM_platemap &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/CM_cell_viability_platemap.xlsx&quot;, 
+<pre class="r"><code>CM_platemap &lt;- read_excel(&quot;data/Presto_blue_results/CM_cell_viability_platemap.xlsx&quot;, 
     skip = 9
     )</code></pre>
-<pre class="r"><code>T0_87_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T0_251028.xlsx&quot;, 
+<pre class="r"><code>T0_87_CM_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC-CM_p1_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_87_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p2_T0_251028.xlsx&quot;, 
+T0_87_CM_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC-CM_p2_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_87_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p3_T0_251028.xlsx&quot;, 
+T0_87_CM_p3_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC-CM_p3_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_87_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p4_T0_251028.xlsx&quot;, 
+T0_87_CM_p4_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC-CM_p4_T0_251028.xlsx&quot;, 
     skip = 26)
-T3_87_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T3_251028.xlsx&quot;, 
-    skip = 26)
-
-T24_87_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+T3_87_CM_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC-CM_p1_T3_251028.xlsx&quot;, 
     skip = 26)
 
-T48_87_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_CM_p3_T48_251030.xlsx&quot;, 
+T24_87_CM_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+    skip = 26)
+
+T48_87_CM_p3_viability &lt;- read_excel(&quot;data/Presto_blue_results/87_CM_p3_T48_251030.xlsx&quot;, 
     skip = 26)
 
 # T96_87_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p4_T96_251101.xlsx&quot;, 
@@ -1711,25 +1745,25 @@ CM_combo_87 &lt;- T0_87_CM_p1_viability %&gt;%
   dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
   pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
   pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
-<pre class="r"><code>T0_78_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T0_251028.xlsx&quot;, 
+<pre class="r"><code>T0_78_CM_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC-CM_p1_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_78_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p2_T0_251028.xlsx&quot;, 
+T0_78_CM_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC-CM_p2_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_78_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p3_T0_251028.xlsx&quot;, 
+T0_78_CM_p3_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC-CM_p3_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_78_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p4_T0_251028.xlsx&quot;, 
+T0_78_CM_p4_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC-CM_p4_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T3_78_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T3_251028.xlsx&quot;, 
+T3_78_CM_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC-CM_p1_T3_251028.xlsx&quot;, 
     skip = 26)
 
-T24_78_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+T24_78_CM_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_iPSC_CM_p2_T24_251029.xlsx&quot;, 
     skip = 26)
 
-T48_78_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p3_T48_251030.xlsx&quot;, 
+T48_78_CM_p3_viability &lt;- read_excel(&quot;data/Presto_blue_results/78_CM_p3_T48_251030.xlsx&quot;, 
     skip = 26)
 
 # T96_78_CM_p4_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p4_T96_251101.xlsx&quot;, 
@@ -1755,20 +1789,20 @@ CM_combo_78 &lt;- T0_78_CM_p1_viability %&gt;%
   dplyr::rename(&quot;Time_Plate&quot;=Well) %&gt;% 
   pivot_longer(., A1:H12, names_to = &quot;Well&quot;, values_to = &quot;reading&quot;) %&gt;% 
   pivot_wider(id_cols=c(&quot;Well&quot;), names_from = &quot;Time_Plate&quot;, values_from = &quot;reading&quot;)</code></pre>
-<pre class="r"><code>T0_75_CM_p1_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p1_T0_251028.xlsx&quot;, 
+<pre class="r"><code>T0_75_CM_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_iPSC-CM_p1_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_75_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p2_T0_251028.xlsx&quot;, 
+T0_75_CM_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_iPSC-CM_p2_T0_251028.xlsx&quot;, 
     skip = 26)
 
-T0_75_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p3_T0_251028.xlsx&quot;, 
+T0_75_CM_p3_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_iPSC-CM_p3_T0_251028.xlsx&quot;, 
     skip = 26)
 
 
-T24_75_CM_p2_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_CM_p2_T24_251029.xlsx&quot;, 
+T24_75_CM_p2_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_iPSC_CM_p2_T24_251029.xlsx&quot;, 
     skip = 26)
 
-T48_75_CM_p3_viability &lt;- read_excel(&quot;C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_CM_p3_T48_251030.xlsx&quot;, 
+T48_75_CM_p3_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_CM_p3_T48_251030.xlsx&quot;, 
     skip = 26)
 
 
@@ -2259,6 +2293,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/10b921a284276679ac55706b2c321da56e3257b5/docs/figure/CX-revision.Rmd/plot all-1.png" target="_blank">10b921a</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-10-31
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/reneeisnowhere/CX_revision/blob/f2ba629dab94b2e9bd4f5aeb535769fda33a8f8e/docs/figure/CX-revision.Rmd/plot all-1.png" target="_blank">f2ba629</a>
