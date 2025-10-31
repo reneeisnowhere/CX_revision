@@ -8,6 +8,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Website link to [webpage!(https://reneeisnowhere.github.io/CX_revision/CX-revision.html)]
+Website link to [webpage!](https://reneeisnowhere.github.io/CX_revision/CX-revision.html)
 
 
