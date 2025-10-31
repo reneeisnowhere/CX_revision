@@ -1,0 +1,1259 @@
+---
+title: "CX-revision"
+author: "Renee Matthews"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	dev = c("png","pdf")
+)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r library}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(drc)
+```
+
+adding input data
+
+```{r data import}
+X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_0hr_ipsc_96wellplate_baseline_no_treatment_10-14-2025_251014.xls", 
+    skip = 34)
+
+X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87-1_48hr_ipsc_96wellplate_CX-DOX-Veh_10-16-2025_251016.xls", 
+    skip = 34)
+
+combo_time_data <- 
+X87_1_0hr_ipsc_96wellplate_baseline_no_treatment_10_14_2025_251014 %>% 
+  dplyr::filter(Well=="Read 2:560,590") %>% 
+  mutate(Well="zero") %>% 
+  bind_rows(X87_1_48hr_ipsc_96wellplate_CX_DOX_Veh_10_16_2025_251016 %>% 
+              dplyr::filter(Well=="Read 2:560,590") %>% mutate(Well="two_day")) %>% 
+  dplyr::rename("Time"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time", values_from = "reading")
+
+```
+
+```{r Platemap}
+Plate_map <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Plate_map.xlsx")
+```
+
+
+```{r Normalize within plate first}
+
+  base_df <- Plate_map %>%
+  pivot_longer(cols = everything(), names_to = "Well") %>%
+  separate(col = value, into = c("trt", "conc"), sep = "_") %>%
+  left_join(., combo_time_data, by = "Well") %>%
+    pivot_longer(cols = c(zero, two_day), names_to = "Time") %>%
+  mutate(
+    trt  = factor(trt, levels = c("CX", "DOX", "VEH", "Unt", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.1","0.5","1","5","10","50","blank")),
+    Time = factor(Time, levels = c("zero","two_day"))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed <- base_df %>%
+  group_by(Time) %>%
+  mutate(
+    blank_mean = mean(value[trt == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+
+untx_per_ct <- processed %>%
+  filter(trt == "Unt") %>%                 # only VEH rows
+  group_by(conc, Time) %>%
+  summarise(
+    unt_mean = mean(adj_reading, na.rm = TRUE),
+    n_unt = n(),
+    .groups = "drop"
+  )
+
+with_veh <-processed %>%
+  left_join(untx_per_ct, by = c( "Time")) %>%
+  mutate(
+    norm_to_veh = case_when(
+      is.na(unt_mean)          ~ NA_real_,               # no VEH present for that conc×Time
+      unt_mean == 0            ~ NA_real_,               # avoid division by zero
+      TRUE                     ~ (adj_reading / unt_mean) * 100
+    )
+  )
+  
+wide_norm <-
+with_veh %>%
+  dplyr::select(Well, trt, conc.x, Time, norm_to_veh) %>%
+  pivot_wider(id_cols = c(Well, trt, conc.x), names_from = Time, values_from = norm_to_veh)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df <- wide_norm %>%
+  mutate(
+    hr_norm = case_when(
+      is.na(zero) | is.na(two_day) ~ NA_real_,
+      zero == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (two_day / zero) * 100
+    )
+  ) %>%
+  filter(trt != "blank")
+
+
+
+```
+
+```{r plots}
+
+final_df %>% 
+  dplyr::rename("conc"=conc.x) %>% 
+  ggplot(., aes(x=conc, y=zero))+
+  geom_boxplot(aes(fill=trt))+
+  theme_bw()+
+  ggtitle("Box plot of normalized day zero across treatments")
+
+final_df %>% 
+  dplyr::rename("conc"=conc.x) %>% 
+  ggplot(., aes(x=conc, y=two_day))+
+  geom_boxplot(aes(fill=trt))+
+  theme_bw()+
+  ggtitle("Box plot of normalized day two across treatments")
+
+
+final_df %>% 
+  dplyr::rename("conc"=conc.x) %>% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=trt))+
+  theme_bw()+
+  ggtitle("Box plot of normalized across time for each well (between plates)")
+```
+
+```{r CX DRC first run}
+# Fit
+gpt_try <- final_df %>%
+  filter(trt == "CX") %>%
+  mutate(conc.x = as.numeric(as.character(conc.x))) 
+model <- final_df %>%
+  filter(trt == "CX") %>%
+  mutate(conc.x = as.numeric(as.character(conc.x))) %>% 
+  drm(hr_norm ~ conc.x, data = ., fct = L.4())
+
+# Predict across log-spaced range
+pred <- data.frame(conc.x = exp(seq(log(min(gpt_try$conc.x[gpt_try$conc.x > 0])),
+                                    log(max(gpt_try$conc.x)),
+                                    length.out = 100)))
+pred$hr_norm <- predict(model, newdata = pred)
+
+
+LD50 <- ED(model, 50, interval = "delta")  # 50% effective dose
+LD50_val <- as.numeric(LD50[1,1])
+# Plot
+gpt_try %>%
+  filter(trt == "CX") %>%
+  ggplot(aes(x = conc.x, y = hr_norm)) +
+  geom_point() +
+  geom_line(data = pred, aes(x = conc.x, y = hr_norm), color = "blue", size = 1) +
+  geom_vline(xintercept = LD50_val, color = "red", linetype = "dashed") +
+  annotate("text", x = LD50_val, y = max(gpt_try$hr_norm, na.rm = TRUE),
+           label = paste0("LD50 = ", signif(LD50_val, 3)),
+           color = "red", angle = 90, vjust = -0.5, hjust = 1.1) +
+  scale_x_log10() +
+  theme_minimal()+
+  ggtitle("iPSC 87-1 Dose response Assay for CX")
+```
+
+
+```{r DOX DRC first run}
+# Fit
+gpt_try_DOX <- final_df %>%
+  filter(trt == "DOX") %>%
+  mutate(conc.x = as.numeric(as.character(conc.x))) 
+model_DOX <- final_df %>%
+  filter(trt == "DOX") %>%
+  mutate(conc.x = as.numeric(as.character(conc.x))) %>% 
+  drm(hr_norm ~ conc.x, data = ., fct = L.4())
+
+# Predict across log-spaced range
+pred_DOX <- data.frame(conc.x = exp(seq(log(min(gpt_try_DOX$conc.x[gpt_try_DOX$conc.x > 0])),
+                                    log(max(gpt_try_DOX$conc.x)),
+                                    length.out = 100)))
+pred_DOX$hr_norm <- predict(model_DOX, newdata = pred_DOX)
+
+
+LD50_DOX <- ED(model_DOX, 50, interval = "delta")  # 50% effective dose
+LD50_val_DOX <- as.numeric(LD50_DOX[1,1])
+# Plot
+gpt_try_DOX %>%
+  filter(trt == "DOX") %>%
+  ggplot(aes(x = conc.x, y = hr_norm)) +
+  geom_point() +
+  geom_line(data = pred_DOX, aes(x = conc.x, y = hr_norm), color = "blue", size = 1) +
+  geom_vline(xintercept = LD50_val_DOX, color = "red", linetype = "dashed") +
+  annotate("text", x = LD50_val_DOX, y = max(gpt_try_DOX$hr_norm, na.rm = TRUE),
+           label = paste0("LD50 = ", signif(LD50_val_DOX, 3)),
+           color = "red", angle = 90, vjust = -0.5, hjust = 1.1) +
+  scale_x_log10() +
+  theme_minimal()+
+  ggtitle("iPSC 87-1 Dose response Assay for DOX")
+```
+### 75-1 iPSC renee
+```{r 75-1 iPSC me}
+T0_75_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p1_iPSC_T0_251026.xls", 
+    skip = 26)
+
+T0_75_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_p2_iPSC_T0_251026.xls", 
+    skip = 26)
+
+T48_75_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p1_T48_251028.xlsx", 
+    skip = 26)
+
+T48_75_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_p2_T48_251028.xlsx", 
+    skip = 26)
+
+iPSC_75_viability_data <- 
+T0_75_iPSC_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_75_iPSC_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T48_75_iPSC_p1_viability %>% 
+              mutate(Well="T48_p1")) %>% 
+   bind_rows(T48_75_iPSC_p2_viability %>% 
+              mutate(Well="T48_p2")) %>% 
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+
+```
+
+
+
+```{r iPSC 48 platemap 75}
+iPSC_plate_map <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx", 
+    skip = 9)
+
+```
+
+```{r normalize within plates 75}
+
+  base_df_75 <-iPSC_plate_map %>%
+  separate(tx_conc, into = c("tx","conc"), sep = "_") %>% 
+  left_join(., iPSC_75_viability_data, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1, T0_p2, T48_p1,T48_p2), names_to = "Time_plate") %>%
+  separate(Time_plate, into = c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.05","0.1","0.5","0.75","1","5","10","na")),
+    Time = factor(Time, levels = c("T0","T48"))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed_75 <- base_df_75 %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+
+untx_per_plate_75 <- processed_75 %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+
+with_untx_75 <- processed_75 %>%
+  left_join(untx_per_plate_75, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+
+wide_norm_75 <-with_untx_75 %>%
+  dplyr::select(Well, tx, conc, Time, plate,norm_to_untx) %>%
+  pivot_wider(id_cols = c(Well, tx, conc,plate), names_from = Time, values_from = norm_to_untx)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df_75 <- wide_norm_75 %>%
+  mutate(
+    hr_norm = case_when(
+      is.na(T0) | is.na(T48) ~ NA_real_,
+      T0 == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (T48 / T0) * 100
+    )
+  ) %>%
+  filter(tx != "blank")
+
+
+
+```
+
+```{r plot 75}
+final_df_75 %>% 
+  # dplyr::rename("conc"=conc.x) %>% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=tx))+
+  theme_bw()+
+  facet_wrap(~tx)+
+  ggtitle("Box plot of normalized 75 DRC")
+```
+
+### 78-1 iPSC renee
+
+```{r 78-1 iPSC me}
+T0_78_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p1_iPSC_T0_251026.xls", 
+    skip = 26)
+
+T0_78_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_p2_iPSC_T0_251026.xls", 
+    skip = 26)
+
+T48_78_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p1_T48_251028.xlsx", 
+    skip = 26)
+
+T48_78_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_p2_T48_251028.xlsx", 
+    skip = 26)
+
+iPSC_78_viability_data <- 
+T0_78_iPSC_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_78_iPSC_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T48_78_iPSC_p1_viability %>% 
+              mutate(Well="T48_p1")) %>% 
+   bind_rows(T48_78_iPSC_p2_viability %>% 
+              mutate(Well="T48_p2")) %>% 
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+
+```
+
+```{r iPSC 48 platemap 78}
+iPSC_plate_map <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/iPSC_cell_viability_platemap.xlsx", 
+    skip = 9)
+
+```
+
+```{r normalize within plates 78}
+
+  base_df_78 <-iPSC_plate_map %>%
+  separate(tx_conc, into = c("tx","conc"), sep = "_") %>% 
+  left_join(., iPSC_78_viability_data, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1, T0_p2, T48_p1,T48_p2), names_to = "Time_plate") %>%
+  separate(Time_plate, into = c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.05","0.1","0.5","0.75","1","5","10","na")),
+    Time = factor(Time, levels = c("T0","T48"))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed_78 <- base_df_78 %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+
+untx_per_plate_78 <- processed_78 %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+
+with_untx_78 <- processed_78 %>%
+  left_join(untx_per_plate_78, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+
+wide_norm_78 <-with_untx_78 %>%
+  dplyr::select(Well, tx, conc, Time, plate,norm_to_untx) %>%
+  pivot_wider(id_cols = c(Well, tx, conc,plate), names_from = Time, values_from = norm_to_untx)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df_78 <- wide_norm_78 %>%
+  mutate(
+    hr_norm = case_when(
+      is.na(T0) | is.na(T48) ~ NA_real_,
+      T0 == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (T48 / T0) * 100
+    )
+  ) %>%
+  filter(tx != "blank")
+
+
+
+```
+
+
+```{r plot 78}
+final_df_78 %>% 
+  # dplyr::rename("conc"=conc.x) %>% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=tx))+
+  theme_bw()+
+  facet_wrap(~tx)+
+  ggtitle("Box plot of normalized 78 DRC")
+```
+
+### 87-1 iPSC renee
+
+```{r 87-1 iPSC me}
+T0_87_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T0_251027.xlsx", 
+    skip = 26)
+
+T0_87_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T0_251027.xlsx", 
+    skip = 26)
+
+T48_87_iPSC_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p1_T48_251029.xlsx", 
+    skip = 26)
+
+T48_87_iPSC_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_p2_T48_251029.xlsx", 
+    skip = 26)
+
+iPSC_87_viability_data <- 
+T0_87_iPSC_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_87_iPSC_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T48_87_iPSC_p1_viability %>% 
+              mutate(Well="T48_p1")) %>% 
+   bind_rows(T48_87_iPSC_p2_viability %>% 
+              mutate(Well="T48_p2")) %>% 
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+
+```
+
+```{r normalize within plates 87}
+
+  base_df_87 <-iPSC_plate_map %>%
+  separate(tx_conc, into = c("tx","conc"), sep = "_") %>% 
+  left_join(., iPSC_87_viability_data, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1, T0_p2, T48_p1,T48_p2), names_to = "Time_plate") %>%
+  separate(Time_plate, into = c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.05","0.1","0.5","0.75","1","5","10","na")),
+    Time = factor(Time, levels = c("T0","T48"))
+  )
+  
+  # 1. subtract blank per Time and clip negatives
+processed_87 <- base_df_87 %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+
+untx_per_plate_87 <- processed_87 %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+
+with_untx_87 <- processed_87 %>%
+  left_join(untx_per_plate_87, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+
+wide_norm_87 <-with_untx_87 %>%
+  dplyr::select(Well, tx, conc, Time, plate,norm_to_untx) %>%
+  pivot_wider(id_cols = c(Well, tx, conc,plate), names_from = Time, values_from = norm_to_untx)
+  
+  # Step 5: compute between-time ratio (two_day relative to zero) safely
+final_df_87 <- wide_norm_87 %>%
+  mutate(
+    hr_norm = case_when(
+      is.na(T0) | is.na(T48) ~ NA_real_,
+      T0 == 0                    ~ NA_real_,   # choose NA to flag unreliable ratio (or 0 if you prefer)
+      TRUE                         ~ (T48 / T0) * 100
+    )
+  ) %>%
+  filter(tx != "blank")
+
+
+
+```
+
+
+```{r plot 87}
+final_df_87 %>% 
+  # dplyr::rename("conc"=conc.x) %>% 
+  ggplot(., aes(x=conc, y=hr_norm))+
+  geom_boxplot(aes(fill=tx))+
+  theme_bw()+
+  facet_wrap(~tx)+
+  ggtitle("Box plot of normalized 87 DRC")
+```
+
+##### plot function
+
+
+```{r plot drc first run}
+plot_drc <- function(data, tx_name, resp_col = "hr_norm", title = NULL, color_line = "blue") {
+  # Filter and prepare data
+  df_sub <- data %>%
+    filter(tx == tx_name) %>%
+    mutate(
+      conc = as.numeric(as.character(conc)),
+      response = as.numeric(.data[[resp_col]])
+    )
+  
+  # Fit dose-response model
+  model <- drm(response ~ conc, data = df_sub, fct = L.4(fixed = c(NA, NA, 100, NA)))
+  
+  # Generate log-spaced predictions
+  pred <- data.frame(conc = exp(seq(
+    log(min(df_sub$conc[df_sub$conc > 0], na.rm = TRUE)),
+    log(max(df_sub$conc, na.rm = TRUE)),
+    length.out = 100
+  )))
+  pred$response <- predict(model, newdata = pred)
+  
+  # LD50
+  LD50 <- ED(model, 50, interval = "delta")
+  LD50_val <- as.numeric(LD50[1, 1])
+  
+  # Create title if missing
+  if (is.null(title)) {
+    title <- paste("Dose–Response Curve for", trt_name)
+  }
+  
+  # Plot
+  p <- ggplot(df_sub, aes(x = conc, y = response)) +
+    geom_point(size = 2, alpha = 0.8) +
+    geom_line(data = pred, aes(x = conc, y = response), color = color_line, size = 1) +
+    geom_vline(xintercept = LD50_val, color = "red", linetype = "dashed") +
+    annotate(
+      "text",
+      x = LD50_val,
+      y = max(df_sub$response, na.rm = TRUE),
+      label = paste0("LD50 = ", signif(LD50_val, 3)),
+      color = "red", angle = 90, vjust = -0.5, hjust = 1.1
+    ) +
+    scale_x_log10() +
+    theme_minimal(base_size = 14) +
+    labs(title = title, x = "Concentration", y = "Response (normalized)")
+  
+  # Return list so you can use both plot and model
+  return(list(plot = p, model = model, LD50 = LD50))
+}
+```
+
+### All CX plots for iPSCs
+```{r}
+CX_75_iPSC <- plot_drc(final_df_75, tx_name = "CX", title = "iPSC 75-1 Dose Response for CX")
+
+CX_75_iPSC$plot
+
+CX_78_iPSC <- plot_drc(final_df_78, tx_name = "CX", title = "iPSC 78-1 Dose Response for CX")
+
+CX_78_iPSC$plot
+
+CX_87_iPSC <- plot_drc(final_df_87, tx_name = "CX", title = "iPSC 87-1 Dose Response for CX")
+
+CX_87_iPSC$plot
+
+
+```
+```{r}
+ggplot(
+  final_df_78 %>% filter(tx == "CX") %>%
+    mutate(conc = as.numeric(as.character(conc))),
+  aes(x = conc, y = hr_norm)
+) +
+  geom_point(size = 2) +
+  stat_smooth(
+    method = drm,
+    method.args = list(fct = L.4(fixed = c(NA, NA, 100, NA))),
+    se = FALSE,
+    color = "blue"
+  ) +
+  scale_x_log10() +
+  theme_minimal() +
+  labs(title = "CX Dose–Response", x = "Concentration", y = "Normalized viability (%)")
+```
+
+```{r}
+# write_csv(final_df_87,"data/iPSC_87_DRC_20251029.csv")
+# write_csv(final_df_75,"data/iPSC_75_DRC_20251028.csv")
+# write_csv(final_df_78,"data/iPSC_78_DRC_20251028.csv")
+```
+
+### Cardiomyocyte treatment
+
+```{r CM platemap}
+
+CM_platemap <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/CM_cell_viability_platemap.xlsx", 
+    skip = 9
+    )
+
+```
+
+
+```{r loading data 87}
+T0_87_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T0_251028.xlsx", 
+    skip = 26)
+
+T0_87_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p2_T0_251028.xlsx", 
+    skip = 26)
+
+T0_87_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p3_T0_251028.xlsx", 
+    skip = 26)
+
+T0_87_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p4_T0_251028.xlsx", 
+    skip = 26)
+T3_87_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC-CM_p1_T3_251028.xlsx", 
+    skip = 26)
+
+T24_87_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p2_T24_251029.xlsx", 
+    skip = 26)
+
+T48_87_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_CM_p3_T48_251030.xlsx", 
+    skip = 26)
+
+# T96_87_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/87_iPSC_CM_p4_T96_251101.xlsx", 
+#     skip = 26)
+
+CM_combo_87 <- T0_87_CM_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_87_CM_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T0_87_CM_p3_viability %>% 
+              mutate(Well="T0_p3")) %>% 
+   bind_rows(T0_87_CM_p4_viability %>% 
+              mutate(Well="T0_p4")) %>% 
+  bind_rows(T3_87_CM_p1_viability %>% 
+              mutate(Well="T3_p1")) %>% 
+  bind_rows(T24_87_CM_p2_viability %>% 
+              mutate(Well="T24_p2")) %>% 
+  bind_rows(T48_87_CM_p3_viability %>%
+              mutate(Well="T48_p3")) %>%
+  #    bind_rows(T96_87_CM_p4_viability %>% 
+  #             mutate(Well="T96_p4")) %>%
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+```
+
+
+```{r loading data 78}
+T0_78_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T0_251028.xlsx", 
+    skip = 26)
+
+T0_78_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p2_T0_251028.xlsx", 
+    skip = 26)
+
+T0_78_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p3_T0_251028.xlsx", 
+    skip = 26)
+
+T0_78_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p4_T0_251028.xlsx", 
+    skip = 26)
+
+T3_78_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC-CM_p1_T3_251028.xlsx", 
+    skip = 26)
+
+T24_78_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_iPSC_CM_p2_T24_251029.xlsx", 
+    skip = 26)
+
+T48_78_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p3_T48_251030.xlsx", 
+    skip = 26)
+
+# T96_78_CM_p4_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/78_CM_p4_T96_251101.xlsx", 
+#     skip = 26)
+
+
+CM_combo_78 <- T0_78_CM_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_78_CM_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T0_78_CM_p3_viability %>% 
+              mutate(Well="T0_p3")) %>% 
+   bind_rows(T0_78_CM_p4_viability %>% 
+              mutate(Well="T0_p4")) %>% 
+  bind_rows(T3_78_CM_p1_viability %>% 
+              mutate(Well="T3_p1")) %>% 
+  bind_rows(T24_78_CM_p2_viability %>% 
+              mutate(Well="T24_p2")) %>% 
+  bind_rows(T48_78_CM_p3_viability %>%
+              mutate(Well="T48_p3")) %>%
+  #    bind_rows(T96_78_CM_p4_viability %>% 
+  #             mutate(Well="T96_p4")) %>%
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+```
+
+
+```{r loading data 75}
+T0_75_CM_p1_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p1_T0_251028.xlsx", 
+    skip = 26)
+
+T0_75_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p2_T0_251028.xlsx", 
+    skip = 26)
+
+T0_75_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC-CM_p3_T0_251028.xlsx", 
+    skip = 26)
+
+
+T24_75_CM_p2_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_iPSC_CM_p2_T24_251029.xlsx", 
+    skip = 26)
+
+T48_75_CM_p3_viability <- read_excel("C:/Users/renee/Documents/Ward Lab/CX-revision/Presto Blue results/75_CM_p3_T48_251030.xlsx", 
+    skip = 26)
+
+
+CM_combo_75 <- T0_75_CM_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_75_CM_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T0_75_CM_p3_viability %>% 
+              mutate(Well="T0_p3")) %>% 
+  # bind_rows(T3_75_CM_p1_viability %>% 
+  #             mutate(Well="T3_p1")) %>% 
+  bind_rows(T24_75_CM_p2_viability %>% 
+              mutate(Well="T24_p2")) %>% 
+  bind_rows(T48_75_CM_p3_viability %>%
+              mutate(Well="T48_p3")) %>%
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+
+```
+
+#### 87 CM
+
+```{r 87 CM analysis}
+base_df_87_CM <- 
+CM_platemap %>%
+  separate(col = tx_conc, into = c("tx", "conc"), sep = "_") %>%
+  left_join(., CM_combo_87, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = "Time_plate") %>%
+  separate(Time_plate, into=c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.1","0.5","2.5","blank")),
+    Time = factor(Time, levels = c("T0","T3","T24","T48","T96"))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_87_CM <- base_df_87_CM %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup() %>% 
+  ##removing a well with no cells
+  dplyr::filter(!(plate == 3 & Well == "C7")) %>% 
+  dplyr::filter(!(plate == 3 & Well == "C8"))
+
+## calculate untx values to normalize all other wells
+untx_per_plate_87_CM <- processed_87_CM %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_87_CM <- processed_87_CM %>%
+  left_join(untx_per_plate_87_CM, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_87_CM <- with_untx_87_CM %>%
+  # Keep only relevant columns
+  filter(tx != "blank") %>%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %>%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = unique(Time))) %>%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %>%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = "Time",
+    values_to = "value"
+  ) %>%
+  group_by(Well, tx, conc, plate) %>%
+  mutate(
+    T0_value = value[Time == "T0"],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) & T0_value > 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %>%
+  ungroup() %>%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+# norm_Tx_over_T0_87_CM <-
+# with_untx_87_CM %>%
+#   filter(tx != "blank") %>%
+#   dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %>%
+#   pivot_wider(
+#     id_cols = c(Well, tx, conc, plate),
+#     names_from = Time,
+#     values_from = norm_to_untx
+#   ) %>%
+#   mutate(
+#     norm_T3_T0  = if_else(!is.na(T0) & T0 > 0, T3  / T0, NA_real_),
+#     norm_T24_T0 = if_else(!is.na(T0) & T0 > 0, T24 / T0, NA_real_))#,
+#     # norm_T48_T0 = if_else(!is.na(T0) & T0 > 0, T48 / T0, NA_real_),
+#     # norm_T96_T0 = if_else(!is.na(T0) & T0 > 0, T96 / T0, NA_real_)
+#   )
+# 
+# norm_Tx_over_T0_87_CM_long <- norm_Tx_over_T0_87_CM %>%
+#   dplyr::select(Well, tx, conc, plate, starts_with("norm_T")) %>%
+#   pivot_longer(
+#     cols = starts_with("norm_T"),
+#     names_to = "norm_type",
+#     values_to = "Tx_over_T0"
+#   )
+```
+
+#### plot 87
+```{r}
+
+norm_Tx_over_T0_87_CM %>% 
+  mutate(Time=factor(Time, levels = c("T0", "T3","T24","T48","T96"))) %>% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle("Treatment over time 87")
+
+```
+
+
+#### 75 CM
+
+```{r 75 CM analysis}
+base_df_75_CM <- 
+CM_platemap %>%
+  separate(col = tx_conc, into = c("tx", "conc"), sep = "_") %>%
+  left_join(., CM_combo_75, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = "Time_plate") %>%
+  separate(Time_plate, into=c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.1","0.5","2.5","blank")),
+    Time = factor(Time, levels = c("T0","T3","T24","T48","T96"))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_75_CM <- base_df_75_CM %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+## calculate untx values to normalize all other wells
+untx_per_plate_75_CM <- processed_75_CM %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_75_CM <- processed_75_CM %>%
+  left_join(untx_per_plate_75_CM, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_75_CM <- with_untx_75_CM %>%
+  # Keep only relevant columns
+  filter(tx != "blank") %>%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %>%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = unique(Time))) %>%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %>%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = "Time",
+    values_to = "value"
+  ) %>%
+  group_by(Well, tx, conc, plate) %>%
+  mutate(
+    T0_value = value[Time == "T0"],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) & T0_value > 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %>%
+  ungroup() %>%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+# norm_Tx_over_T0_75_CM <-
+# with_untx_75_CM %>%
+#   filter(tx != "blank") %>%
+#   dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %>%
+#   pivot_wider(
+#     id_cols = c(Well, tx, conc, plate),
+#     names_from = Time,
+#     values_from = norm_to_untx
+#   ) %>%
+#   mutate(
+#     norm_T3_T0  = if_else(!is.na(T0) & T0 > 0, T3  / T0, NA_real_),
+#     norm_T24_T0 = if_else(!is.na(T0) & T0 > 0, T24 / T0, NA_real_))#,
+#     # norm_T48_T0 = if_else(!is.na(T0) & T0 > 0, T48 / T0, NA_real_),
+#     # norm_T96_T0 = if_else(!is.na(T0) & T0 > 0, T96 / T0, NA_real_)
+#   )
+# 
+# norm_Tx_over_T0_75_CM_long <- norm_Tx_over_T0_75_CM %>%
+#   dplyr::select(Well, tx, conc, plate, starts_with("norm_T")) %>%
+#   pivot_longer(
+#     cols = starts_with("norm_T"),
+#     names_to = "norm_type",
+#     values_to = "Tx_over_T0"
+#   )
+```
+
+#### plot 75
+```{r}
+
+norm_Tx_over_T0_75_CM %>% 
+  mutate(Time=factor(Time, levels = c("T0", "T3","T24","T48","T96"))) %>% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle("Treatment over time for 75")
+
+```
+#### 78 CM
+
+```{r 78 CM analysis}
+base_df_78_CM <- 
+CM_platemap %>%
+  separate(col = tx_conc, into = c("tx", "conc"), sep = "_") %>%
+  left_join(., CM_combo_78, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = "Time_plate") %>%
+  separate(Time_plate, into=c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.1","0.5","2.5","blank")),
+    Time = factor(Time, levels = c("T0","T3","T24","T48","T96"))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_78_CM <- base_df_78_CM %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+## calculate untx values to normalize all other wells
+untx_per_plate_78_CM <- processed_78_CM %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_78_CM <- processed_78_CM %>%
+  left_join(untx_per_plate_78_CM, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_78_CM <- with_untx_78_CM %>%
+  # Keep only relevant columns
+  filter(tx != "blank") %>%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %>%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = c("T0","T3","T24","T48"))) %>%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %>%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = "Time",
+    values_to = "value"
+  ) %>%
+  group_by(Well, tx, conc, plate) %>%
+  mutate(
+    T0_value = value[Time == "T0"],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) & T0_value > 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %>%
+  ungroup() %>%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+
+```
+
+#### plot 78
+
+```{r}
+
+norm_Tx_over_T0_78_CM %>% 
+  mutate(Time=factor(Time, levels = c("T0", "T3","T24","T48","T96"))) %>% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle("Treatment over time for 78")
+
+```
+```{r combining individuals untx}
+
+all_lines <- bind_rows(
+  norm_Tx_over_T0_87_CM %>% mutate(cell_line = "87"),
+  norm_Tx_over_T0_75_CM %>% mutate(cell_line = "75"),
+  norm_Tx_over_T0_78_CM %>% mutate(cell_line = "78")
+)
+summ_all <- all_lines %>%
+  group_by(cell_line, tx, conc, Time) %>%
+  summarise(
+    mean_Tx_over_T0 = mean(Tx_over_T0, na.rm = TRUE),
+    se_Tx_over_T0 = sd(Tx_over_T0, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+```
+
+##### All normalized to untx plot
+
+```{r plot all}
+
+summ_all %>% 
+  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
+  mutate(Time=factor(Time, levels=c("T0","T3","T24","T48")),
+         group=paste0(conc,"_",tx)) %>%
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  theme_classic()+
+  ggtitle("Treatment over time for all lines just to untx")+
+  coord_cartesian(ylim = c(0,115))
+  
+
+```
+
+#### Normalizing to VEH too
+```{r using VEH control as another normlizing step}
+normalize_to_vehicle <- function(platemap_df, combo_df) {
+  
+  base_df <- platemap_df %>%
+    separate(col = tx_conc, into = c("tx", "conc"), sep = "_") %>%
+    left_join(., combo_df, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = "Time_plate") %>%
+    separate(Time_plate, into = c("Time", "plate"), sep = "_") %>%
+    mutate(
+      tx = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),
+      conc = factor(conc, levels = c("0","0.1","0.5","2.5","blank")),
+      Time = factor(Time, levels = c("T0", "T3", "T24", "T48", "T96"))
+    )
+  
+  # 1️⃣ Subtract blank per Time and clip negatives
+  processed <- base_df %>%
+    group_by(plate, Time) %>%
+    mutate(
+      blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+      adj_reading = pmax(value - blank_mean, 0)
+    ) %>%
+    ungroup()
+  
+  # 2️⃣ Compute VEH means per plate/time/concentration
+  veh_per_plate <- processed %>%
+    dplyr::filter(tx == "VEH") %>%
+    group_by(plate, Time, conc) %>%
+    summarise(
+      veh_mean = mean(adj_reading, na.rm = TRUE),
+      n_veh = n(),
+      .groups = "drop"
+    )
+  
+  # 3️⃣ Join VEH means to all wells & normalize
+  with_veh <- processed %>%
+    left_join(veh_per_plate, by = c("plate", "Time", "conc")) %>%
+    mutate(
+      norm_to_veh = if_else(
+        !is.na(veh_mean) & veh_mean > 0,
+        (adj_reading / veh_mean) * 100,
+        NA_real_
+      )
+    ) %>%
+    ungroup()
+  
+  # 4️⃣ Normalize each timepoint to T0 (Tx/T0)
+  norm_Tx_over_T0 <- with_veh %>%
+    dplyr::filter(tx != "blank") %>%
+    dplyr::select(Well, tx, conc, Time, plate, norm_to_veh) %>%
+    mutate(Time = factor(Time, levels = c("T0", "T3", "T24", "T48"))) %>%
+    pivot_wider(
+      id_cols = c(Well, tx, conc, plate),
+      names_from = Time,
+      values_from = norm_to_veh
+    ) %>%
+    pivot_longer(
+      cols = -c(Well, tx, conc, plate),
+      names_to = "Time",
+      values_to = "value"
+    ) %>%
+    group_by(Well, tx, conc, plate) %>%
+    mutate(
+      T0_value = value[Time == "T0"],
+      Tx_over_T0 = if_else(
+        !is.na(T0_value) & T0_value > 0,
+        (value / T0_value) * 100,
+        NA_real_
+      )
+    ) %>%
+    ungroup() %>%
+    dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+  
+  return(norm_Tx_over_T0)
+}
+```
+
+```{r}
+VEH_norm_plot_CM_75 <- normalize_to_vehicle(CM_platemap,CM_combo_75)
+
+VEH_norm_plot_CM_78 <- normalize_to_vehicle(CM_platemap,CM_combo_78)
+
+VEH_norm_plot_CM_87 <- normalize_to_vehicle(CM_platemap,CM_combo_87)
+```
+
+##### VEH normed plot
+
+```{r combining individuals VEH norm}
+
+all_lines_VEH_norm <- bind_rows(
+  VEH_norm_plot_CM_87 %>% mutate(cell_line = "87"),
+  VEH_norm_plot_CM_75 %>% mutate(cell_line = "75"),
+  VEH_norm_plot_CM_78 %>% mutate(cell_line = "78")
+)
+summ_all_VEH_norm <- all_lines_VEH_norm %>%
+  group_by(cell_line, tx, conc, Time) %>%
+  summarise(
+    mean_Tx_over_T0 = mean(Tx_over_T0, na.rm = TRUE),
+    se_Tx_over_T0 = sd(Tx_over_T0, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+```
+
+
+```{r plot all VEH norm}
+
+summ_all_VEH_norm %>% 
+  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
+  mutate(Time=factor(Time, levels=c("T0","T3","T24","T48")),
+         group=paste0(conc,"_",tx)) %>%
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  theme_classic()+
+  ggtitle("Treatment over time for all lines VEH norm")+
+  coord_cartesian(ylim = c(0,125))
+  
+
+```
