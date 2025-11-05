@@ -1130,9 +1130,10 @@ summ_all <- all_lines %>%
 ```{r plot all}
 
 summ_all %>% 
-  dplyr::filter(tx %in% c("CX","DOX")) %>% 
+  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
   mutate(Time=factor(Time, levels=c("T0","T3","T24","T48","T96")),
          group=paste0(conc,"_",tx)) %>%
+  dplyr::filter(Time %in% c("T0","T3","T24","T48")) %>% 
   ggplot(aes(x=group,y=mean_Tx_over_T0))+
   geom_boxplot(aes(fill=Time))+
   theme_classic()+
@@ -1262,5 +1263,264 @@ summ_all_VEH_norm %>%
   ggtitle("Treatment over time for all lines VEH norm")+
   coord_cartesian(ylim = c(0,125))
   
+
+```
+```{r viability at T0 of vehicle}
+
+response_comment_75 <- with_untx_75_CM %>% 
+  dplyr::select(Well:plate,norm_to_untx) %>% 
+  dplyr::filter(tx=="VEH"&conc=="0.5") %>% 
+  group_by(Time) %>% 
+  summarise(
+    mean_VEH_0.5 = mean(norm_to_untx, na.rm = TRUE),
+    se_VEH_0.5 = sd(norm_to_untx, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop")
+
+response_comment_87 <- with_untx_87_CM %>% 
+  dplyr::select(Well:plate,norm_to_untx) %>% 
+  dplyr::filter(tx=="VEH"&conc=="0.5") %>% 
+  group_by(Time) %>% 
+  summarise(
+    mean_VEH_0.5 = mean(norm_to_untx, na.rm = TRUE),
+    se_VEH_0.5 = sd(norm_to_untx, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop")
+
+response_comment_78 <- with_untx_78_CM %>% 
+  dplyr::select(Well:plate,norm_to_untx) %>% 
+  dplyr::filter(tx=="VEH"&conc=="0.5") %>% 
+  group_by(Time) %>% 
+  summarise(
+    mean_VEH_0.5 = mean(norm_to_untx, na.rm = TRUE),
+    se_VEH_0.5 = sd(norm_to_untx, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop")
+
+response_comment_75 %>% 
+  mutate(ind="75") %>% 
+  bind_rows(response_comment_78 %>% 
+              mutate(ind="78")) %>% 
+  bind_rows(response_comment_87 %>% 
+              mutate(ind="87")) %>% 
+  dplyr::filter(Time %in% c("T0","T24","T48")) %>% 
+  ggplot(aes(x=Time,y=mean_VEH_0.5))+
+  geom_boxplot()+
+  geom_point(aes(color=ind, size = 5))+
+  geom_line(aes(group=ind)) +
+  theme_minimal()+
+  ggtitle("0.5 uM VEH across time")
+  
+  
+```
+```{r}
+
+response_comment_75.1 <- with_untx_75_CM %>% 
+  dplyr::select(Well:plate,norm_to_untx) %>% 
+  dplyr::filter(tx=="VEH"&conc=="0.1") %>% 
+  group_by(Time) %>% 
+  summarise(
+    mean_VEH_0.1 = mean(norm_to_untx, na.rm = TRUE),
+    se_VEH_0.1 = sd(norm_to_untx, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop")
+
+response_comment_87.1 <- with_untx_87_CM %>% 
+  dplyr::select(Well:plate,norm_to_untx) %>% 
+  dplyr::filter(tx=="VEH"&conc=="0.1") %>% 
+  group_by(Time) %>% 
+  summarise(
+    mean_VEH_0.1 = mean(norm_to_untx, na.rm = TRUE),
+    se_VEH_0.1 = sd(norm_to_untx, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop")
+
+response_comment_78.1 <- with_untx_78_CM %>% 
+  dplyr::select(Well:plate,norm_to_untx) %>% 
+  dplyr::filter(tx=="VEH"&conc=="0.1") %>% 
+  group_by(Time) %>% 
+  summarise(
+    mean_VEH_0.1 = mean(norm_to_untx, na.rm = TRUE),
+    se_VEH_0.1 = sd(norm_to_untx, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop")
+response_comment_75.1 %>% 
+  mutate(ind="75") %>% 
+  bind_rows(response_comment_78.1 %>% 
+              mutate(ind="78")) %>% 
+  bind_rows(response_comment_87.1 %>% 
+              mutate(ind="87")) %>% 
+  dplyr::filter(Time %in% c("T0","T24","T48")) %>% 
+  ggplot(aes(x=Time,y=mean_VEH_0.1))+
+  geom_boxplot()+
+  geom_point(aes(color=ind, size = 5))+
+  geom_line(aes(group=ind)) +
+  theme_minimal()+
+  ggtitle("0.1 uM VEH across time")
+```
+
+### New 75-1
+
+
+```{r new 75-1 }
+
+T0_75.1_CM_p1_viability <- read_excel("data/Presto_blue_results/75_CM_p1_T0_251103.xlsx", 
+    skip = 26)
+
+T0_75.1_CM_p2_viability <- read_excel("data/Presto_blue_results/75_CM_p2_T0_251103.xlsx", 
+    skip = 26)
+
+T0_75.1_CM_p3_viability <- read_excel("data/Presto_blue_results/75_CM_p3_T0_251103.xlsx", 
+    skip = 26)
+
+
+T0_75.1_CM_p4_viability <- read_excel("data/Presto_blue_results/75_CM_p4_T0_251103.xlsx", 
+    skip = 26)
+
+T3_75.1_CM_p1_viability <- read_excel("data/Presto_blue_results/75_CM_p1_T3_251103.xlsx", 
+    skip = 26)
+
+T24_75.1_CM_p2_viability <- read_excel("data/Presto_blue_results/75_CM_p2_T24_251104.xlsx", 
+    skip = 26)
+
+T48_75.1_CM_p3_viability <- read_excel("data/Presto_blue_results/75_CM_p3_T48_251105.xlsx", 
+    skip = 26)
+
+
+
+CM_combo_75.1 <- T0_75.1_CM_p1_viability %>% 
+  mutate(Well="T0_p1") %>% 
+  bind_rows(T0_75.1_CM_p2_viability %>% 
+              mutate(Well="T0_p2")) %>% 
+  bind_rows(T0_75.1_CM_p3_viability %>% 
+              mutate(Well="T0_p3")) %>%
+  # bind_rows(T0_75.1_CM_p4_viability %>% 
+  #             mutate(Well="T0_p4")) %>%
+  bind_rows(T3_75.1_CM_p1_viability %>%
+              mutate(Well="T3_p1")) %>%
+  bind_rows(T24_75.1_CM_p2_viability %>% 
+              mutate(Well="T24_p2")) %>% 
+  bind_rows(T48_75.1_CM_p3_viability %>%
+              mutate(Well="T48_p3")) %>%
+  dplyr::rename("Time_Plate"=Well) %>% 
+  pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
+  pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
+
+```
+
+```{r process new 75}
+base_df_75.1_CM <- 
+CM_platemap %>%
+  separate(col = tx_conc, into = c("tx", "conc"), sep = "_") %>%
+  left_join(., CM_combo_75.1, by = "Well") %>%
+    pivot_longer(cols = c(T0_p1:last_col()), names_to = "Time_plate") %>%
+  separate(Time_plate, into=c("Time","plate"), sep = "_") %>% 
+  mutate(
+    tx  = factor(tx, levels = c("CX", "DOX", "VEH", "untx", "blank")),   # check these levels match your data
+    conc = factor(conc, levels = c("0","0.1","0.5","2.5","blank")),
+    Time = factor(Time, levels = c("T0","T3","T24","T48","T96"))
+  )
+
+  # 1. subtract blank per Time and clip negatives
+processed_75.1_CM <- base_df_75.1_CM %>%
+  group_by(plate,Time) %>%
+  mutate(
+    blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
+    adj_reading = pmax(value - blank_mean, 0)
+  ) %>%
+  ungroup()
+
+## calculate untx values to normalize all other wells
+untx_per_plate_75.1_CM <- processed_75.1_CM %>%
+  filter(tx == "untx") %>%
+  group_by(plate, Time) %>%
+  summarise(
+    untx_mean = mean(adj_reading, na.rm = TRUE),
+    n_untx = n(),
+    .groups = "drop"
+  )
+
+
+### add the untx values in the plate and normalize to untx
+with_untx_75.1_CM <- processed_75.1_CM %>%
+  left_join(untx_per_plate_75.1_CM, by = c("plate", "Time")) %>%
+  mutate(
+    norm_to_untx = if_else(
+      !is.na(untx_mean) & untx_mean > 0,
+      (adj_reading / untx_mean) * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup()
+
+### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
+norm_Tx_over_T0_75.1_CM <- with_untx_75.1_CM %>%
+  # Keep only relevant columns
+  filter(tx != "blank") %>%
+  dplyr::select(Well, tx, conc, Time, plate, norm_to_untx) %>%
+  
+  # Ensure consistent order of timepoints
+  mutate(Time = factor(Time, levels = unique(Time))) %>%
+  
+  # Pivot wider so each timepoint is its own column
+  pivot_wider(
+    id_cols = c(Well, tx, conc, plate),
+    names_from = Time,
+    values_from = norm_to_untx
+  ) %>%
+  
+  # Pivot longer again to calculate T(x)/T0
+  pivot_longer(
+    cols = -c(Well, tx, conc, plate),
+    names_to = "Time",
+    values_to = "value"
+  ) %>%
+  group_by(Well, tx, conc, plate) %>%
+  mutate(
+    T0_value = value[Time == "T0"],
+    Tx_over_T0 = if_else(
+      !is.na(T0_value) & T0_value > 0,
+      (value / T0_value) * 100,   # convert ratio to percent
+      NA_real_
+    )
+  ) %>%
+  ungroup() %>%
+  dplyr::select(Well, tx, conc, plate, Time, Tx_over_T0)
+
+```
+
+#### plot 75.1
+```{r}
+
+norm_Tx_over_T0_75.1_CM %>% 
+  mutate(Time=factor(Time, levels = c("T0", "T3","T24","T48","T96"))) %>% 
+  ggplot(aes(x=interaction(tx,conc),y=Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  ggtitle("Treatment over time for 75 2nd try")
+
+all_lines.1 <- bind_rows(
+  norm_Tx_over_T0_87_CM %>% mutate(cell_line = "87"),
+  norm_Tx_over_T0_75.1_CM %>% mutate(cell_line = "75"),
+  norm_Tx_over_T0_78_CM %>% mutate(cell_line = "78")
+)
+summ_all.1 <- all_lines.1 %>%
+  group_by(cell_line, tx, conc, Time) %>%
+  summarise(
+    mean_Tx_over_T0 = mean(Tx_over_T0, na.rm = TRUE),
+    se_Tx_over_T0 = sd(Tx_over_T0, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+
+
+
+
+summ_all.1 %>% 
+  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
+  mutate(Time=factor(Time, levels=c("T0","T3","T24","T48","T96")),
+         group=paste0(conc,"_",tx)) %>%
+  dplyr::filter(Time %in% c("T0","T3","T24","T48")) %>% 
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=Time))+
+  theme_classic()+
+  ggtitle("Treatment over time for all lines just to untx with new 75 at 48 hours")+
+  coord_cartesian(ylim = c(0,115))
+
+# write.csv(summ_all.1,"data/CM_cell_viability_3-96_new75.csv")
+# write.csv(all_lines.1,"data/individual_data_points_CM_viability_new75_3-96.csv")
 
 ```
