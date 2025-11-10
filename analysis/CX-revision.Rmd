@@ -1380,6 +1380,9 @@ T24_75.1_CM_p2_viability <- read_excel("data/Presto_blue_results/75_CM_p2_T24_25
 T48_75.1_CM_p3_viability <- read_excel("data/Presto_blue_results/75_CM_p3_T48_251105.xlsx", 
     skip = 26)
 
+T96_75.1_CM_p4_viability <- read_excel("data/Presto_blue_results/75_CM_p4_T96_251107.xlsx", 
+    skip = 26)
+
 
 
 CM_combo_75.1 <- T0_75.1_CM_p1_viability %>% 
@@ -1388,14 +1391,16 @@ CM_combo_75.1 <- T0_75.1_CM_p1_viability %>%
               mutate(Well="T0_p2")) %>% 
   bind_rows(T0_75.1_CM_p3_viability %>% 
               mutate(Well="T0_p3")) %>%
-  # bind_rows(T0_75.1_CM_p4_viability %>% 
-  #             mutate(Well="T0_p4")) %>%
+  bind_rows(T0_75.1_CM_p4_viability %>%
+              mutate(Well="T0_p4")) %>%
   bind_rows(T3_75.1_CM_p1_viability %>%
               mutate(Well="T3_p1")) %>%
   bind_rows(T24_75.1_CM_p2_viability %>% 
               mutate(Well="T24_p2")) %>% 
   bind_rows(T48_75.1_CM_p3_viability %>%
               mutate(Well="T48_p3")) %>%
+  bind_rows(T96_75.1_CM_p4_viability %>%
+              mutate(Well="T96_p4")) %>%
   dplyr::rename("Time_Plate"=Well) %>% 
   pivot_longer(., A1:H12, names_to = "Well", values_to = "reading") %>% 
   pivot_wider(id_cols=c("Well"), names_from = "Time_Plate", values_from = "reading")
@@ -1414,30 +1419,29 @@ CM_platemap %>%
     conc = factor(conc, levels = c("0","0.1","0.5","2.5","blank")),
     Time = factor(Time, levels = c("T0","T3","T24","T48","T96"))
   )
-
   # 1. subtract blank per Time and clip negatives
-processed_75.1_CM <- base_df_75.1_CM %>%
+processed_75.1_CM <-
+base_df_75.1_CM %>%
   group_by(plate,Time) %>%
   mutate(
     blank_mean = mean(value[tx == "blank"], na.rm = TRUE),
     adj_reading = pmax(value - blank_mean, 0)
   ) %>%
-  ungroup()
+  ungroup() 
 
 ## calculate untx values to normalize all other wells
 untx_per_plate_75.1_CM <- processed_75.1_CM %>%
-  filter(tx == "untx") %>%
+  filter(tx == "untx") %>% 
   group_by(plate, Time) %>%
   summarise(
     untx_mean = mean(adj_reading, na.rm = TRUE),
     n_untx = n(),
     .groups = "drop"
-  )
-
+  ) 
 
 ### add the untx values in the plate and normalize to untx
 with_untx_75.1_CM <- processed_75.1_CM %>%
-  left_join(untx_per_plate_75.1_CM, by = c("plate", "Time")) %>%
+  left_join(untx_per_plate_75.1_CM, by = c("plate", "Time")) %>% 
   mutate(
     norm_to_untx = if_else(
       !is.na(untx_mean) & untx_mean > 0,
@@ -1445,8 +1449,8 @@ with_untx_75.1_CM <- processed_75.1_CM %>%
       NA_real_
     )
   ) %>%
-  ungroup()
-
+  ungroup() 
+  
 ### Filter out blanks and pivot for T0 to T48 normalizing. (probably pivot by plate first to normalize across the times)
 norm_Tx_over_T0_75.1_CM <- with_untx_75.1_CM %>%
   # Keep only relevant columns
@@ -1513,12 +1517,12 @@ summ_all.1 %>%
   dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
   mutate(Time=factor(Time, levels=c("T0","T3","T24","T48","T96")),
          group=paste0(conc,"_",tx)) %>%
-  dplyr::filter(Time %in% c("T0","T3","T24","T48")) %>% 
+  dplyr::filter(Time %in% c("T0","T3","T24","T48","T96")) %>% 
   ggplot(aes(x=group,y=mean_Tx_over_T0))+
   geom_boxplot(aes(fill=Time))+
   theme_classic()+
   ggtitle("Treatment over time for all lines just to untx with new 75 at 48 hours")+
-  coord_cartesian(ylim = c(0,115))
+  coord_cartesian(ylim = c(0,125))
 
 # write.csv(summ_all.1,"data/CM_cell_viability_3-96_new75.csv")
 # write.csv(all_lines.1,"data/individual_data_points_CM_viability_new75_3-96.csv")
