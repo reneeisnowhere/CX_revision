@@ -350,12 +350,12 @@ File.append(line, masterFile);
 loading files for positive nuclei
 
 ```{r}
-Nuclei_gamma_count_75<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/75-1/DAPI_counts/Master_summary_75_final.csv") %>% na.omit()
+Nuclei_gamma_count_75<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/75-1/DAPI_counts/Master_summary_75_final_1.csv") %>% na.omit()
 
-Nuclei_gamma_count_78<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/78-1/DAPI_counts/Master_summary_78_final.csv") %>% na.omit()
+Nuclei_gamma_count_78<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/78-1/DAPI_counts/Master_summary_78_final_1.csv") %>% na.omit()
 
 
-Nuclei_gamma_count_87<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/87-1/DAPI_counts/Master_summary_87_final.csv") %>% na.omit()
+Nuclei_gamma_count_87<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/87-1/DAPI_counts/Master_summary_87_final_1.csv") %>% na.omit()
 
 Ind_75_table <- Nuclei_gamma_count_75 %>% 
   separate(Sample, into= c("time","conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
