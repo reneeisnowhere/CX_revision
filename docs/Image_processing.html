@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Renee Matthews" />
+
+<meta name="date" content="2025-11-10" />
+
+<title>Image_processing</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CX_revison</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Image_processing</h1>
+<h4 class="author">Renee Matthews</h4>
+<h4 class="date">2025-11-10</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-11-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>CX_revison/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251031code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251031)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251031code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251031)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreea162dccf8c51f03619158d3c712400e6d494e02ftargetblanka162dcca">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/a162dccf8c51f03619158d3c712400e6d494e02f" target="_blank">a162dcc</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreea162dccf8c51f03619158d3c712400e6d494e02ftargetblanka162dcca"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/a162dccf8c51f03619158d3c712400e6d494e02f" target="_blank">a162dcc</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   CX_revison.Rproj
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/Image_processing.Rmd</code>) and
+HTML (<code>docs/Image_processing.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/a162dccf8c51f03619158d3c712400e6d494e02f/analysis/Image_processing.Rmd" target="_blank">a162dcc</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-10
+</td>
+<td>
+first commits
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+</style>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(readr)</code></pre>
+<pre class="r"><code>results_path_75 &lt;- &quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/75-1/DAPI_area&quot;
+results_path_78 &lt;- &quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/78-1/DAPI_area&quot;
+results_path_87 &lt;- &quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/87-1/DAPI_area&quot;
+
+# List all .csv files
+files &lt;- list.files(results_path_75, pattern = &quot;\\.csv$&quot;, full.names = TRUE)
+
+# Read each file and extract average area
+area_summary &lt;- files %&gt;%
+  lapply(function(f) {
+    df &lt;- read_csv(f, show_col_types = FALSE)
+    # Make sure the column name matches &quot;Area&quot; (case-sensitive)
+    avg_area &lt;- mean(df$Area, na.rm = TRUE)
+    data.frame(
+      File = basename(f),
+      Average_Area = avg_area
+    )
+  }) %&gt;%
+  bind_rows()
+
+# View combined summary
+print(area_summary)</code></pre>
+<pre><code>                                     File Average_Area
+1   DAPI_area_0-1um_75_CX_C_DAPI_0001.csv    1143.5612
+2   DAPI_area_0-1um_75_CX_C_DAPI_0002.csv    1336.0571
+3  DAPI_area_0-1um_75_DOX_C_DAPI_0001.csv    1327.1429
+4  DAPI_area_0-1um_75_DOX_C_DAPI_0002.csv    1239.6190
+5  DAPI_area_0-1um_75_DOX_C_DAPI_0003.csv    1374.0360
+6  DAPI_area_0-1um_75_VEH_C_DAPI_0001.csv    1201.6392
+7  DAPI_area_0-1um_75_VEH_C_DAPI_0002.csv    1032.5979
+8  DAPI_area_0-1um_75_VEH_C_DAPI_0003.csv     963.0517
+9   DAPI_area_0-5um_75_CX_C_DAPI_0001.csv    1426.5926
+10  DAPI_area_0-5um_75_CX_C_DAPI_0002.csv    1490.1373
+11  DAPI_area_0-5um_75_CX_C_DAPI_0003.csv    1830.9167
+12 DAPI_area_0-5um_75_DOX_C_DAPI_0001.csv    1365.8750
+13 DAPI_area_0-5um_75_DOX_C_DAPI_0002.csv    1315.8571
+14 DAPI_area_0-5um_75_DOX_C_DAPI_0003.csv    1315.8571
+15 DAPI_area_0-5um_75_DOX_C_DAPI_0004.csv    1163.0769
+16 DAPI_area_0-5um_75_DOX_C_DAPI_0005.csv    1163.0769
+17 DAPI_area_0-5um_75_VEH_C_DAPI_0001.csv    1144.6503
+18 DAPI_area_0-5um_75_VEH_C_DAPI_0002.csv    1039.9371
+19 DAPI_area_0-5um_75_VEH_C_DAPI_0003.csv    1153.5325
+20  DAPI_area_0um_75_untx_C_DAPI_0001.csv    1212.7891
+21  DAPI_area_0um_75_untx_C_DAPI_0002.csv    1129.8219
+22   DAPI_area_10um_75_CX_C_DAPI_0001.csv    1095.2857
+23   DAPI_area_10um_75_CX_C_DAPI_0002.csv    1536.7805
+24  DAPI_area_10um_75_DOX_C_DAPI_0001.csv    1009.3670
+25  DAPI_area_10um_75_DOX_C_DAPI_0002.csv    1122.8623
+26  DAPI_area_10um_75_DOX_C_DAPI_0003.csv    1122.8623
+27  DAPI_area_10um_75_DOX_C_DAPI_0004.csv    1424.0286
+28  DAPI_area_10um_75_VEH_C_DAPI_0001.csv     502.8696
+29  DAPI_area_10um_75_VEH_C_DAPI_0002.csv     703.8261
+30  DAPI_area_10um_75_VEH_C_DAPI_0003.csv     999.3478
+31    DAPI_area_1um_75_CX_C_DAPI_0001.csv    1273.8204
+32    DAPI_area_1um_75_CX_C_DAPI_0002.csv    1499.1132
+33    DAPI_area_1um_75_CX_C_DAPI_0003.csv    1240.3191
+34   DAPI_area_1um_75_DOX_C_DAPI_0001.csv    1068.9192
+35   DAPI_area_1um_75_DOX_C_DAPI_0002.csv    1231.3333
+36   DAPI_area_1um_75_VEH_C_DAPI_0001.csv    1115.3431
+37   DAPI_area_1um_75_VEH_C_DAPI_0002.csv    1181.5657
+38   DAPI_area_1um_75_VEH_C_DAPI_0003.csv    1203.2521
+39  DAPI_area_2-5um_75_CX_C_DAPI_0001.csv    1262.1728
+40  DAPI_area_2-5um_75_CX_C_DAPI_0002.csv    1262.2361
+41 DAPI_area_2-5um_75_DOX_C_DAPI_0001.csv    1162.8841
+42 DAPI_area_2-5um_75_DOX_C_DAPI_0002.csv     825.3568
+43 DAPI_area_2-5um_75_DOX_C_DAPI_0003.csv    1077.3855
+44 DAPI_area_2-5um_75_VEH_C_DAPI_0001.csv    1192.7391
+45 DAPI_area_2-5um_75_VEH_C_DAPI_0002.csv    1192.7391
+46 DAPI_area_2-5um_75_VEH_C_DAPI_0003.csv    1197.6429
+47    DAPI_area_5um_75_CX_C_DAPI_0001.csv    1165.7000
+48    DAPI_area_5um_75_CX_C_DAPI_0002.csv    1293.9600
+49    DAPI_area_5um_75_CX_C_DAPI_0003.csv    1120.0978
+50   DAPI_area_5um_75_DOX_C_DAPI_0001.csv     942.8281
+51   DAPI_area_5um_75_DOX_C_DAPI_0002.csv    1463.8760
+52   DAPI_area_5um_75_DOX_C_DAPI_0003.csv    1455.4362
+53   DAPI_area_5um_75_VEH_C_DAPI_0001.csv    1258.3939
+54   DAPI_area_5um_75_VEH_C_DAPI_0002.csv    1294.8911
+55   DAPI_area_5um_75_VEH_C_DAPI_0003.csv    1001.9767</code></pre>
+<pre class="r"><code>get_avg_area_summary &lt;- function(results_path = &quot;Results/&quot;, save_csv = TRUE) {
+  
+  
+  # List all CSV files in the directory
+  files &lt;- list.files(results_path, pattern = &quot;\\.csv$&quot;, full.names = TRUE)
+  
+  if (length(files) == 0) {
+    stop(&quot;No CSV files found in the specified directory.&quot;)
+  }
+  
+  # Read each file and calculate summary stats
+  area_summary &lt;- files %&gt;%
+    lapply(function(f) {
+      df &lt;- read_csv(f, show_col_types = FALSE)
+      
+      # Ensure &quot;Area&quot; column exists
+      if (!&quot;Area&quot; %in% names(df)) {
+        warning(paste(&quot;File&quot;, basename(f), &quot;does not contain an &#39;Area&#39; column. Skipping.&quot;))
+        return(NULL)
+      }
+      
+      data.frame(
+        File = basename(f),
+        Average_Area = mean(df$Area, na.rm = TRUE),
+        Median_Area = median(df$Area, na.rm = TRUE),
+        SD_Area = sd(df$Area, na.rm = TRUE),
+        Count = sum(!is.na(df$Area))
+      )
+    }) %&gt;%
+    bind_rows()
+  
+  # # Optional save
+  # if (save_csv) {
+  #   out_file &lt;- file.path(results_path, &quot;Average_Area_Summary.csv&quot;)
+  #   write_csv(area_summary, out_file)
+  #   message(&quot;Summary saved to: &quot;, out_file)
+  # }
+  
+  # Return summary and overall average
+  overall_avg &lt;- mean(area_summary$Average_Area, na.rm = TRUE)
+  message(&quot;Overall average nuclear area: &quot;, round(overall_avg, 2))
+  
+  return(area_summary)
+}</code></pre>
+<pre class="r"><code>area_summary_75 &lt;- get_avg_area_summary(results_path = results_path_75)
+
+area_summary_87 &lt;-get_avg_area_summary(results_path = results_path_87)
+
+area_summary_78 &lt;-get_avg_area_summary(results_path = results_path_78)
+
+combo_area &lt;-
+area_summary_75 %&gt;% 
+  bind_rows(area_summary_78) %&gt;% 
+  bind_rows(area_summary_87) %&gt;% 
+  separate(File, into = c(&quot;1&quot;,&quot;2&quot;,&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;,&quot;view&quot;,&quot;4&quot;,&quot;5&quot;), sep = &quot;_&quot;) %&gt;% 
+  mutate(conc=str_replace(conc, pattern=&quot;-&quot;,replacement=&quot;.&quot;),
+         `5`=str_replace(`5`,pattern=&quot;\\.csv&quot;,&quot;&quot;)) %&gt;% 
+  group_by(ind,conc,tx) %&gt;% 
+  summarize(mean_area=mean(Average_Area, na.rm = TRUE), .groups = &quot;drop&quot;) %&gt;% 
+  mutate(tx=factor(tx, levels=c(&quot;untx&quot;,&quot;VEH&quot;,&quot;CX&quot;,&quot;DOX&quot;)),
+         conc= factor(conc, levels=c(&quot;0um&quot;,&quot;0.1um&quot;,&quot;0.5um&quot;,&quot;1um&quot;,&quot;2.5um&quot;,&quot;5um&quot;,&quot;10um&quot;))) %&gt;% 
+  na.omit()</code></pre>
+<pre class="r"><code>ggplot(combo_area, aes(x=interaction(tx,conc),y=mean_area))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=45, hjust=1))</code></pre>
+<p><img src="figure/Image_processing.Rmd/plotting-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>kruskal.test(mean_area ~ interaction(tx, conc), data = combo_area)</code></pre>
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  mean_area by interaction(tx, conc)
+Kruskal-Wallis chi-squared = 8.9607, df = 19, p-value = 0.9741</code></pre>
+<p>No significant difference between area of nuclei and the interaction
+of tx and concentration using Kruskal-Wallis test.</p>
+<p>adding in positive nuclei counts:</p>
+<p>script for identifying nuclei</p>
+<pre class="r"><code>// === STEP 1: Open first .tif image from the folder ===
+folder = &quot;C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\C_DAPI\\&quot;;
+saveRoiFolder = &quot;C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\outline\\&quot;;
+
+list = getFileList(folder);
+
+for (i = 0; i &lt; list.length; i++) {
+    if (endsWith(list[i], &quot;.tif&quot;)) {
+        // Open image
+        open(folder + list[i]);
+        originalTitle = getTitle();
+
+        // === STEP 2: Duplicate and close original ===
+        baseName = replace(getTitle(), &quot;.tif&quot;, &quot;&quot;);  // removes .tif extension
+        newTitle = baseName;  // or whatever matches your naming
+        run(&quot;Duplicate...&quot;, &quot;title=&quot; + newTitle);
+        dupTitle = getTitle(); // duplicated image becomes active
+        selectImage(originalTitle);
+        close();
+
+        // === STEP 3: Process duplicated image ===
+        selectImage(dupTitle);
+        run(&quot;8-bit&quot;);
+        setAutoThreshold(&quot;Otsu dark&quot;);
+        setOption(&quot;BlackBackground&quot;, true);
+        run(&quot;Convert to Mask&quot;);
+        run(&quot;Watershed&quot;);
+
+        // === STEP 4: Analyze particles ===
+        run(&quot;Analyze Particles...&quot;, &quot;size=21-Infinity circularity=0.30-1.00 show=[Count Masks] display exclude summarize add&quot;);
+
+        // === STEP 5: Save ROIs ===
+        roiManager(&quot;Select&quot;, 0); // Avoid saving empty ROI manager
+        saveName = replace(dupTitle, &quot;.tif&quot;, &quot;&quot;) + &quot;.zip&quot;;
+        roiManager(&quot;Save&quot;, saveRoiFolder + saveName);
+
+        // Cleanup (optional)
+        close();
+        maskTitle = &quot;Count Masks of &quot; + dupTitle;
+        if (isOpen(maskTitle)) {
+            selectImage(maskTitle);
+             close();
+            }
+
+        roiManager(&quot;Deselect&quot;);
+        roiManager(&quot;Reset&quot;);
+
+       // break; // Remove this line if you want to process all images in the folder
+    }
+}</code></pre>
+<p>script for counting posive nuclei</p>
+<pre class="r"><code>// === USER SETTINGS ===
+roiFolder = &quot;C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\outline\\&quot;;
+txredFolder = &quot;C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\C_TxRed\\&quot;;
+outputFolder = &quot;C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\DAPI_counts\\&quot;;
+signalThreshold = 5;  // define what counts as a &quot;positive signal&quot;
+
+// === GET ROI FILES ===
+roiFiles = getFileList(roiFolder);
+// Before the loop, open/create summary file
+masterFile = outputFolder + &quot;Master_summary.csv&quot;;
+// Write header (run once, before loop)
+if (File.exists(masterFile)) File.delete(masterFile);
+File.append(&quot;Sample,Total_ROIs,Positive_ROIs\n&quot;, masterFile);
+
+// === LOOP OVER EACH ROI FILE ===
+for (i = 0; i &lt; roiFiles.length; i++) {
+    roiFile = roiFiles[i];
+    
+    // Only process .zip ROI files
+    if (!endsWith(roiFile, &quot;.zip&quot;)) continue;
+
+    // Remove suffixes more precisely
+    baseName = replace(roiFile, &quot;.zip&quot;, &quot;&quot;);  // e.g. &quot;3h_87_DOX_B_DAPI_0004&quot;
+
+    // === Build full filenames ===
+    roiPath = roiFolder + roiFile;
+    txredImage = replace(baseName, &quot;_DAPI_&quot;, &quot;_TxRed_&quot;) + &quot;.tif&quot;;
+    txredPath = txredFolder + txredImage;
+    outputCSV = outputFolder + &quot;Cell_intensity_&quot; + baseName + &quot;.csv&quot;;
+
+    // === Check if TxRed image exists ===
+    if (!File.exists(txredPath)) {
+        print(&quot;Skipping: TxRed image not found for&quot;, baseName);
+        continue;
+    }
+
+    // === Open image ===
+    open(txredPath);
+    imageTitle = getTitle();
+
+    // === Load ROI file ===
+    roiManager(&quot;Reset&quot;);
+    roiManager(&quot;Open&quot;, roiPath);
+    roiManager(&quot;Show None&quot;);
+    roiManager(&quot;Show All&quot;);
+    
+// Prepare image but KEEP original intensities for measurement
+run(&quot;8-bit&quot;);
+setAutoThreshold(&quot;Otsu dark&quot;);
+getThreshold(lower, upper);
+minThreshold = 3;
+if (lower &lt; minThreshold) lower = minThreshold;
+setThreshold(lower, 255);
+
+// Optional: create a mask only for visualization (do not measure on it)
+// run(&quot;Convert to Mask&quot;);
+
+  
+// === Measure signal in ROIs ===
+run(&quot;Set Measurements...&quot;, &quot;area mean min redirect=[&quot; + imageTitle + &quot;] decimal=3&quot;);
+roiCount = roiManager(&quot;Count&quot;);
+if (roiCount == 0) {
+    print(&quot;No ROIs in&quot;, roiFile);
+    close();
+    continue;
+}
+
+roiIndexes = newArray(roiCount);
+for (j = 0; j &lt; roiCount; j++) roiIndexes[j] = j;
+
+selectImage(imageTitle);
+roiManager(&quot;Select&quot;, roiIndexes);
+roiManager(&quot;Measure&quot;);
+
+    // === Count ROIs with mean &gt; threshold ===
+    positiveCount = 0;
+    for (j = 0; j &lt; roiCount; j++) {
+        value = getResult(&quot;Mean&quot;, j);
+        if (value &gt; signalThreshold) {
+            positiveCount++;
+        }
+    }
+// === Optional quality control: flag unexpectedly low or high counts ===
+minPos = 15;
+maxPos = 50;
+
+if (positiveCount &lt; minPos || positiveCount &gt; maxPos) {
+    print(&quot;⚠️ WARNING: Sample&quot;, baseName, &quot;has&quot;, positiveCount, &quot;positive ROIs (expected between&quot;, minPos, &quot;and&quot;, maxPos, &quot;)&quot;);
+
+    selectImage(imageTitle);
+    roiManager(&quot;Show All&quot;);
+
+    waitForUser(&quot;Inspect and adjust this sample manually if needed.\nWhen done, click OK to re-measure and continue.&quot;);
+
+    // Reapply measurement settings after manual changes
+    run(&quot;Clear Results&quot;);
+    run(&quot;Set Measurements...&quot;, &quot;area mean min redirect=[&quot; + imageTitle + &quot;] decimal=3&quot;);
+
+    // Make sure the same image is selected and ROIs are active
+    selectImage(imageTitle);
+    roiCount = roiManager(&quot;Count&quot;);
+    roiIndexes = newArray(roiCount);
+    for (j = 0; j &lt; roiCount; j++) roiIndexes[j] = j;
+
+    roiManager(&quot;Select&quot;, roiIndexes);
+    roiManager(&quot;Measure&quot;);
+
+    // Recount positives using new mean values
+    positiveCount = 0;
+    for (j = 0; j &lt; roiCount; j++) {
+        value = getResult(&quot;Mean&quot;, j);
+        if (value &gt; signalThreshold) positiveCount++;
+    }
+
+    print(&quot;✅ After manual adjustment:&quot;, positiveCount, &quot;positive ROIs&quot;);
+}
+
+    // === Save Results table ===
+    saveAs(&quot;Results&quot;, outputCSV);
+    // Inside your processing loop, after counting positives:
+line = baseName + &quot;,&quot; + roiCount + &quot;,&quot; + positiveCount + &quot;\n&quot;;
+File.append(line, masterFile);
+
+    // === Optional: Print summary to log ===
+    print(baseName, &quot;: &quot;, positiveCount, &quot;/&quot;, roiCount, &quot; ROIs positive (&gt;&quot;, signalThreshold, &quot;)&quot;);
+
+    // === Cleanup ===
+    close(); // Close TxRed image
+    roiManager(&quot;Reset&quot;);
+    run(&quot;Clear Results&quot;);
+}</code></pre>
+<p>loading files for positive nuclei</p>
+<pre class="r"><code>Nuclei_gamma_count_75&lt;- read_delim(&quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/75-1/DAPI_counts/Master_summary_75_final.csv&quot;) %&gt;% na.omit()
+
+Nuclei_gamma_count_78&lt;- read_delim(&quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/78-1/DAPI_counts/Master_summary_78_final.csv&quot;) %&gt;% na.omit()
+
+
+Nuclei_gamma_count_87&lt;- read_delim(&quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/87-1/DAPI_counts/Master_summary_87_final.csv&quot;) %&gt;% na.omit()
+
+Ind_75_table &lt;- Nuclei_gamma_count_75 %&gt;% 
+  separate(Sample, into= c(&quot;time&quot;,&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;, &quot;focus&quot;,&quot;DAPI&quot;,&quot;number&quot;), sep=&quot;_&quot;) %&gt;% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100,
+         time=factor(time, levels=c(&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;))) %&gt;% 
+  dplyr::filter(tx != &quot;untx&quot;) %&gt;% 
+  dplyr::filter(tx != &quot;2nd&quot;) %&gt;% 
+  group_by(tx,time, conc) %&gt;%
+  mutate(group_number = rep(c(&quot;A&quot;,&quot;B&quot;), length.out = n())) %&gt;% 
+  ungroup() %&gt;% 
+  dplyr::select(time:tx,percent_pos,group_number) %&gt;% 
+  pivot_wider(., id_cols=c(time, conc,ind,tx), names_from = group_number, values_from = percent_pos) %&gt;% 
+    rowwise() %&gt;% 
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1)) 
+
+Ind_87_table &lt;- Nuclei_gamma_count_87 %&gt;%
+  separate(Sample, into= c(&quot;time&quot;,&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;, &quot;focus&quot;,&quot;DAPI&quot;,&quot;number&quot;), sep=&quot;_&quot;) %&gt;% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100,
+         time=factor(time, levels=c(&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;))) %&gt;% 
+  dplyr::filter(tx != &quot;untx&quot;) %&gt;% 
+  dplyr::filter(tx != &quot;2nd&quot;) %&gt;% 
+  group_by(tx,time, conc) %&gt;%
+  mutate(group_number = rep(c(&quot;A&quot;,&quot;B&quot;), length.out = n())) %&gt;% 
+  ungroup() %&gt;% 
+  dplyr::select(time:tx,percent_pos,group_number) %&gt;% 
+  pivot_wider(., id_cols=c(time, conc,ind,tx), names_from = group_number, values_from = percent_pos) %&gt;% 
+    rowwise() %&gt;% 
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1)) 
+
+
+Ind_78_table &lt;-  Nuclei_gamma_count_78 %&gt;%
+  separate(Sample, into= c(&quot;time&quot;,&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;, &quot;focus&quot;,&quot;DAPI&quot;,&quot;number&quot;), sep=&quot;_&quot;) %&gt;% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100,
+         time=factor(time, levels=c(&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;))) %&gt;% 
+  dplyr::filter(tx != &quot;untx&quot;) %&gt;% 
+  dplyr::filter(tx != &quot;2nd&quot;) %&gt;% 
+    dplyr::filter(ind !=&quot;untx&quot;) %&gt;% 
+  group_by(tx,time, conc) %&gt;%
+  mutate(group_number = rep(c(&quot;A&quot;,&quot;B&quot;), length.out = n())) %&gt;% 
+  ungroup() %&gt;% 
+  dplyr::select(time:tx,percent_pos,group_number) %&gt;% 
+  pivot_wider(., id_cols=c(time, conc,ind,tx), names_from = group_number, values_from = percent_pos) %&gt;% 
+    rowwise() %&gt;% 
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1)) </code></pre>
+<pre class="r"><code>combined_if_table &lt;- bind_rows(Ind_78_table,Ind_87_table) %&gt;%
+  bind_rows(., Ind_75_table) %&gt;% 
+  mutate(conc=str_replace(conc, pattern=&quot;-&quot;,replacement=&quot;.&quot;)) %&gt;% 
+  mutate(time=factor(time, levels=c(&quot;T3&quot;,&quot;T24&quot;,&quot;T48&quot;)),
+         tx=factor(tx, levels= c(&quot;VEH&quot;,&quot;CX&quot;,&quot;DOX&quot;)),
+         conc=factor(conc, levels = c(&quot;0.1um&quot;,&quot;0.5um&quot;,&quot;2.5um&quot;))) %&gt;% 
+  mutate(grouping=paste0(tx,&quot;_&quot;,time)) %&gt;% 
+  mutate(grouping=factor(grouping,levels=c(&quot;VEH_T3&quot;,&quot;CX_T3&quot;,&quot;DOX_T3&quot;,
+                                          &quot;VEH_T24&quot;,&quot;CX_T24&quot;,&quot;DOX_T24&quot;,
+                                          &quot;VEH_T48&quot;,&quot;CX_T48&quot;,&quot;DOX_T48&quot;)))
+  
+combined_if_table %&gt;% 
+  dplyr::filter(conc==&quot;2.5um&quot;) %&gt;% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c(&quot;VEH_T3&quot;, &quot;DOX_T3&quot;),
+      c(&quot;VEH_T3&quot;, &quot;CX_T3&quot;),
+      c(&quot;VEH_T24&quot;, &quot;DOX_T24&quot;),
+      c(&quot;VEH_T24&quot;, &quot;CX_T24&quot;),
+      c(&quot;VEH_T48&quot;, &quot;DOX_T48&quot;),
+       c(&quot;VEH_T48&quot;, &quot;CX_T48&quot;)),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = &quot;t.test&quot;)+
+      theme_bw()+
+      ggtitle(&quot;2.5 uM at T3, T24, T48&quot;)</code></pre>
+<p><img src="figure/Image_processing.Rmd/combine%20for%20graphs-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>combined_if_table %&gt;% 
+  dplyr::filter(conc!=&quot;2.5um&quot;) %&gt;% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c(&quot;VEH_T3&quot;, &quot;DOX_T3&quot;),
+      c(&quot;VEH_T3&quot;, &quot;CX_T3&quot;),
+      c(&quot;VEH_T24&quot;, &quot;DOX_T24&quot;),
+      c(&quot;VEH_T24&quot;, &quot;CX_T24&quot;),
+      c(&quot;VEH_T48&quot;, &quot;DOX_T48&quot;),
+       c(&quot;VEH_T48&quot;, &quot;CX_T48&quot;)),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = &quot;t.test&quot;)+
+      theme_bw()+
+  facet_wrap(~conc)+
+      ggtitle(&quot;0.1um and 0.5 uM at T3, T24, T48&quot;)+
+  theme(axis.text.x=element_text(angle=45,hjust=1))</code></pre>
+<p><img src="figure/Image_processing.Rmd/first%20table-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26100)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] readxl_1.4.5    lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1  
+ [5] dplyr_1.1.4     purrr_1.1.0     readr_2.1.5     tidyr_1.3.1    
+ [9] tibble_3.3.0    ggplot2_3.5.2   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] sass_0.4.10        generics_0.1.4     stringi_1.8.7      hms_1.1.3         
+ [5] digest_0.6.37      magrittr_2.0.3     timechange_0.3.0   evaluate_1.0.5    
+ [9] grid_4.4.2         RColorBrewer_1.1-3 fastmap_1.2.0      cellranger_1.1.0  
+[13] rprojroot_2.1.1    jsonlite_2.0.0     processx_3.8.6     whisker_0.4.1     
+[17] ps_1.9.1           promises_1.3.3     httr_1.4.7         scales_1.4.0      
+[21] jquerylib_0.1.4    cli_3.6.5          crayon_1.5.3       rlang_1.1.6       
+[25] bit64_4.6.0-1      withr_3.0.2        cachem_1.1.0       yaml_2.3.10       
+[29] parallel_4.4.2     tools_4.4.2        tzdb_0.5.0         ggsignif_0.6.4    
+[33] httpuv_1.6.16      vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4   
+[37] git2r_0.36.2       bit_4.6.0          fs_1.6.6           vroom_1.6.5       
+[41] pkgconfig_2.0.3    callr_3.7.6        pillar_1.11.0      bslib_0.9.0       
+[45] later_1.4.2        gtable_0.3.6       glue_1.8.0         Rcpp_1.1.0        
+[49] xfun_0.52          tidyselect_1.2.1   rstudioapi_0.17.1  knitr_1.50        
+[53] dichromat_2.0-0.1  farver_2.1.2       htmltools_0.5.8.1  labeling_0.4.3    
+[57] rmarkdown_2.29     compiler_4.4.2     getPass_0.2-4     </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
