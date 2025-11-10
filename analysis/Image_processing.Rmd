@@ -1,0 +1,464 @@
+---
+title: "Image_processing"
+author: "Renee Matthews"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	dev = c("png","pdf")
+)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r library}
+library(tidyverse)
+library(readxl)
+library(readr)
+```
+
+
+
+```{r}
+
+results_path_75 <- "C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/75-1/DAPI_area"
+results_path_78 <- "C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/78-1/DAPI_area"
+results_path_87 <- "C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/87-1/DAPI_area"
+
+# List all .csv files
+files <- list.files(results_path_75, pattern = "\\.csv$", full.names = TRUE)
+
+# Read each file and extract average area
+area_summary <- files %>%
+  lapply(function(f) {
+    df <- read_csv(f, show_col_types = FALSE)
+    # Make sure the column name matches "Area" (case-sensitive)
+    avg_area <- mean(df$Area, na.rm = TRUE)
+    data.frame(
+      File = basename(f),
+      Average_Area = avg_area
+    )
+  }) %>%
+  bind_rows()
+
+# View combined summary
+print(area_summary)
+
+```
+
+
+
+```{r}
+
+get_avg_area_summary <- function(results_path = "Results/", save_csv = TRUE) {
+  
+  
+  # List all CSV files in the directory
+  files <- list.files(results_path, pattern = "\\.csv$", full.names = TRUE)
+  
+  if (length(files) == 0) {
+    stop("No CSV files found in the specified directory.")
+  }
+  
+  # Read each file and calculate summary stats
+  area_summary <- files %>%
+    lapply(function(f) {
+      df <- read_csv(f, show_col_types = FALSE)
+      
+      # Ensure "Area" column exists
+      if (!"Area" %in% names(df)) {
+        warning(paste("File", basename(f), "does not contain an 'Area' column. Skipping."))
+        return(NULL)
+      }
+      
+      data.frame(
+        File = basename(f),
+        Average_Area = mean(df$Area, na.rm = TRUE),
+        Median_Area = median(df$Area, na.rm = TRUE),
+        SD_Area = sd(df$Area, na.rm = TRUE),
+        Count = sum(!is.na(df$Area))
+      )
+    }) %>%
+    bind_rows()
+  
+  # # Optional save
+  # if (save_csv) {
+  #   out_file <- file.path(results_path, "Average_Area_Summary.csv")
+  #   write_csv(area_summary, out_file)
+  #   message("Summary saved to: ", out_file)
+  # }
+  
+  # Return summary and overall average
+  overall_avg <- mean(area_summary$Average_Area, na.rm = TRUE)
+  message("Overall average nuclear area: ", round(overall_avg, 2))
+  
+  return(area_summary)
+}
+```
+
+```{r checking area on full conc}
+
+
+area_summary_75 <- get_avg_area_summary(results_path = results_path_75)
+
+area_summary_87 <-get_avg_area_summary(results_path = results_path_87)
+
+area_summary_78 <-get_avg_area_summary(results_path = results_path_78)
+
+combo_area <-
+area_summary_75 %>% 
+  bind_rows(area_summary_78) %>% 
+  bind_rows(area_summary_87) %>% 
+  separate(File, into = c("1","2","conc","ind","tx","view","4","5"), sep = "_") %>% 
+  mutate(conc=str_replace(conc, pattern="-",replacement="."),
+         `5`=str_replace(`5`,pattern="\\.csv","")) %>% 
+  group_by(ind,conc,tx) %>% 
+  summarize(mean_area=mean(Average_Area, na.rm = TRUE), .groups = "drop") %>% 
+  mutate(tx=factor(tx, levels=c("untx","VEH","CX","DOX")),
+         conc= factor(conc, levels=c("0um","0.1um","0.5um","1um","2.5um","5um","10um"))) %>% 
+  na.omit()
+
+```
+
+```{r plotting}
+
+ggplot(combo_area, aes(x=interaction(tx,conc),y=mean_area))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+kruskal.test(mean_area ~ interaction(tx, conc), data = combo_area)
+```
+
+No significant difference between area of nuclei and the interaction of tx and concentration using Kruskal-Wallis test.
+
+
+adding in positive nuclei counts:
+
+script for identifying nuclei
+
+```{r macros 1, eval=FALSE}
+
+// === STEP 1: Open first .tif image from the folder ===
+folder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\C_DAPI\\";
+saveRoiFolder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\outline\\";
+
+list = getFileList(folder);
+
+for (i = 0; i < list.length; i++) {
+    if (endsWith(list[i], ".tif")) {
+        // Open image
+        open(folder + list[i]);
+        originalTitle = getTitle();
+
+        // === STEP 2: Duplicate and close original ===
+        baseName = replace(getTitle(), ".tif", "");  // removes .tif extension
+		newTitle = baseName;  // or whatever matches your naming
+		run("Duplicate...", "title=" + newTitle);
+        dupTitle = getTitle(); // duplicated image becomes active
+        selectImage(originalTitle);
+        close();
+
+        // === STEP 3: Process duplicated image ===
+        selectImage(dupTitle);
+        run("8-bit");
+        setAutoThreshold("Otsu dark");
+        setOption("BlackBackground", true);
+        run("Convert to Mask");
+        run("Watershed");
+
+        // === STEP 4: Analyze particles ===
+        run("Analyze Particles...", "size=21-Infinity circularity=0.30-1.00 show=[Count Masks] display exclude summarize add");
+
+        // === STEP 5: Save ROIs ===
+        roiManager("Select", 0); // Avoid saving empty ROI manager
+        saveName = replace(dupTitle, ".tif", "") + ".zip";
+        roiManager("Save", saveRoiFolder + saveName);
+
+        // Cleanup (optional)
+        close();
+        maskTitle = "Count Masks of " + dupTitle;
+		if (isOpen(maskTitle)) {
+    		selectImage(maskTitle);
+   			 close();
+			}
+
+        roiManager("Deselect");
+        roiManager("Reset");
+
+       // break; // Remove this line if you want to process all images in the folder
+    }
+}
+
+   
+   
+ 
+
+```
+
+
+script for counting posive nuclei
+```{r macros 2, eval=FALSE}
+// === USER SETTINGS ===
+roiFolder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\outline\\";
+txredFolder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\C_TxRed\\";
+outputFolder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\DAPI_counts\\";
+signalThreshold = 5;  // define what counts as a "positive signal"
+
+// === GET ROI FILES ===
+roiFiles = getFileList(roiFolder);
+// Before the loop, open/create summary file
+masterFile = outputFolder + "Master_summary.csv";
+// Write header (run once, before loop)
+if (File.exists(masterFile)) File.delete(masterFile);
+File.append("Sample,Total_ROIs,Positive_ROIs\n", masterFile);
+
+// === LOOP OVER EACH ROI FILE ===
+for (i = 0; i < roiFiles.length; i++) {
+    roiFile = roiFiles[i];
+    
+    // Only process .zip ROI files
+    if (!endsWith(roiFile, ".zip")) continue;
+
+    // Remove suffixes more precisely
+	baseName = replace(roiFile, ".zip", "");  // e.g. "3h_87_DOX_B_DAPI_0004"
+
+    // === Build full filenames ===
+    roiPath = roiFolder + roiFile;
+    txredImage = replace(baseName, "_DAPI_", "_TxRed_") + ".tif";
+    txredPath = txredFolder + txredImage;
+    outputCSV = outputFolder + "Cell_intensity_" + baseName + ".csv";
+
+    // === Check if TxRed image exists ===
+    if (!File.exists(txredPath)) {
+        print("Skipping: TxRed image not found for", baseName);
+        continue;
+    }
+
+    // === Open image ===
+    open(txredPath);
+    imageTitle = getTitle();
+
+    // === Load ROI file ===
+    roiManager("Reset");
+    roiManager("Open", roiPath);
+    roiManager("Show None");
+    roiManager("Show All");
+    
+// Prepare image but KEEP original intensities for measurement
+run("8-bit");
+setAutoThreshold("Otsu dark");
+getThreshold(lower, upper);
+minThreshold = 3;
+if (lower < minThreshold) lower = minThreshold;
+setThreshold(lower, 255);
+
+// Optional: create a mask only for visualization (do not measure on it)
+// run("Convert to Mask");
+
+  
+// === Measure signal in ROIs ===
+run("Set Measurements...", "area mean min redirect=[" + imageTitle + "] decimal=3");
+roiCount = roiManager("Count");
+if (roiCount == 0) {
+    print("No ROIs in", roiFile);
+    close();
+    continue;
+}
+
+roiIndexes = newArray(roiCount);
+for (j = 0; j < roiCount; j++) roiIndexes[j] = j;
+
+selectImage(imageTitle);
+roiManager("Select", roiIndexes);
+roiManager("Measure");
+
+    // === Count ROIs with mean > threshold ===
+    positiveCount = 0;
+    for (j = 0; j < roiCount; j++) {
+        value = getResult("Mean", j);
+        if (value > signalThreshold) {
+            positiveCount++;
+        }
+    }
+// === Optional quality control: flag unexpectedly low or high counts ===
+minPos = 15;
+maxPos = 50;
+
+if (positiveCount < minPos || positiveCount > maxPos) {
+    print("⚠️ WARNING: Sample", baseName, "has", positiveCount, "positive ROIs (expected between", minPos, "and", maxPos, ")");
+
+    selectImage(imageTitle);
+    roiManager("Show All");
+
+    waitForUser("Inspect and adjust this sample manually if needed.\nWhen done, click OK to re-measure and continue.");
+
+    // Reapply measurement settings after manual changes
+    run("Clear Results");
+    run("Set Measurements...", "area mean min redirect=[" + imageTitle + "] decimal=3");
+
+    // Make sure the same image is selected and ROIs are active
+    selectImage(imageTitle);
+    roiCount = roiManager("Count");
+    roiIndexes = newArray(roiCount);
+    for (j = 0; j < roiCount; j++) roiIndexes[j] = j;
+
+    roiManager("Select", roiIndexes);
+    roiManager("Measure");
+
+    // Recount positives using new mean values
+    positiveCount = 0;
+    for (j = 0; j < roiCount; j++) {
+        value = getResult("Mean", j);
+        if (value > signalThreshold) positiveCount++;
+    }
+
+    print("✅ After manual adjustment:", positiveCount, "positive ROIs");
+}
+
+
+    // === Save Results table ===
+    saveAs("Results", outputCSV);
+    // Inside your processing loop, after counting positives:
+line = baseName + "," + roiCount + "," + positiveCount + "\n";
+File.append(line, masterFile);
+
+    // === Optional: Print summary to log ===
+    print(baseName, ": ", positiveCount, "/", roiCount, " ROIs positive (>", signalThreshold, ")");
+
+    // === Cleanup ===
+    close(); // Close TxRed image
+    roiManager("Reset");
+    run("Clear Results");
+}
+
+```
+
+
+loading files for positive nuclei
+
+```{r}
+Nuclei_gamma_count_75<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/75-1/DAPI_counts/Master_summary_75_final.csv") %>% na.omit()
+
+Nuclei_gamma_count_78<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/78-1/DAPI_counts/Master_summary_78_final.csv") %>% na.omit()
+
+
+Nuclei_gamma_count_87<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/3-24-48_ERM/87-1/DAPI_counts/Master_summary_87_final.csv") %>% na.omit()
+
+Ind_75_table <- Nuclei_gamma_count_75 %>% 
+  separate(Sample, into= c("time","conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100,
+         time=factor(time, levels=c("T3","T24","T48"))) %>% 
+  dplyr::filter(tx != "untx") %>% 
+  dplyr::filter(tx != "2nd") %>% 
+  group_by(tx,time, conc) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>% 
+  ungroup() %>% 
+  dplyr::select(time:tx,percent_pos,group_number) %>% 
+  pivot_wider(., id_cols=c(time, conc,ind,tx), names_from = group_number, values_from = percent_pos) %>% 
+    rowwise() %>% 
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1)) 
+
+Ind_87_table <- Nuclei_gamma_count_87 %>%
+  separate(Sample, into= c("time","conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100,
+         time=factor(time, levels=c("T3","T24","T48"))) %>% 
+  dplyr::filter(tx != "untx") %>% 
+  dplyr::filter(tx != "2nd") %>% 
+  group_by(tx,time, conc) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>% 
+  ungroup() %>% 
+  dplyr::select(time:tx,percent_pos,group_number) %>% 
+  pivot_wider(., id_cols=c(time, conc,ind,tx), names_from = group_number, values_from = percent_pos) %>% 
+    rowwise() %>% 
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1)) 
+
+
+Ind_78_table <-  Nuclei_gamma_count_78 %>%
+  separate(Sample, into= c("time","conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100,
+         time=factor(time, levels=c("T3","T24","T48"))) %>% 
+  dplyr::filter(tx != "untx") %>% 
+  dplyr::filter(tx != "2nd") %>% 
+    dplyr::filter(ind !="untx") %>% 
+  group_by(tx,time, conc) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>% 
+  ungroup() %>% 
+  dplyr::select(time:tx,percent_pos,group_number) %>% 
+  pivot_wider(., id_cols=c(time, conc,ind,tx), names_from = group_number, values_from = percent_pos) %>% 
+    rowwise() %>% 
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1)) 
+
+
+
+
+```
+
+```{r combine for graphs}
+combined_if_table <- bind_rows(Ind_78_table,Ind_87_table) %>%
+  bind_rows(., Ind_75_table) %>% 
+  mutate(conc=str_replace(conc, pattern="-",replacement=".")) %>% 
+  mutate(time=factor(time, levels=c("T3","T24","T48")),
+         tx=factor(tx, levels= c("VEH","CX","DOX")),
+         conc=factor(conc, levels = c("0.1um","0.5um","2.5um"))) %>% 
+  mutate(grouping=paste0(tx,"_",time)) %>% 
+  mutate(grouping=factor(grouping,levels=c("VEH_T3","CX_T3","DOX_T3",
+                                          "VEH_T24","CX_T24","DOX_T24",
+                                          "VEH_T48","CX_T48","DOX_T48")))
+  
+combined_if_table %>% 
+  dplyr::filter(conc=="2.5um") %>% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c("VEH_T3", "DOX_T3"),
+      c("VEH_T3", "CX_T3"),
+      c("VEH_T24", "DOX_T24"),
+      c("VEH_T24", "CX_T24"),
+      c("VEH_T48", "DOX_T48"),
+       c("VEH_T48", "CX_T48")),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = "t.test")+
+      theme_bw()+
+      ggtitle("2.5 uM at T3, T24, T48")
+
+
+```
+
+
+```{r first table}
+combined_if_table %>% 
+  dplyr::filter(conc!="2.5um") %>% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c("VEH_T3", "DOX_T3"),
+      c("VEH_T3", "CX_T3"),
+      c("VEH_T24", "DOX_T24"),
+      c("VEH_T24", "CX_T24"),
+      c("VEH_T48", "DOX_T48"),
+       c("VEH_T48", "CX_T48")),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = "t.test")+
+      theme_bw()+
+  facet_wrap(~conc)+
+      ggtitle("0.1um and 0.5 uM at T3, T24, T48")+
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+```
+
