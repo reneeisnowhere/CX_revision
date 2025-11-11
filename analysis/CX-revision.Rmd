@@ -214,6 +214,56 @@ gpt_try_DOX %>%
   theme_minimal()+
   ggtitle("iPSC 87-1 Dose response Assay for DOX")
 ```
+
+```{r  combodrc}
+gpt_try_dbl <- final_df %>%
+mutate(conc.x = as.numeric(as.character(conc.x)))
+
+pred_both <- bind_rows((pred %>% mutate(trt="CX")), (pred_DOX%>% mutate(trt="DOX")))
+
+LD50_df <- data.frame(
+  trt = c("CX", "DOX"),
+  LD50_val = c(LD50_val, LD50_val_DOX),
+  max_y = c(
+    max(final_df$hr_norm[final_df$trt == "CX"], na.rm = TRUE),
+    max(final_df$hr_norm[final_df$trt == "DOX"], na.rm = TRUE)
+  )
+)
+
+vline_df <- data.frame(
+  trt = c("CX", "DOX"),
+  LD50_val = c(LD50_val, LD50_val_DOX)
+)
+
+
+final_df %>%
+mutate(conc.x = as.numeric(as.character(conc.x))) %>% 
+  dplyr::filter(trt %in% c("CX","DOX")) %>% 
+  ggplot(., aes(x = conc.x, y = hr_norm, color = trt)) +
+  geom_point() +
+  geom_line(data = pred_both, aes(x = conc.x, y = hr_norm, color = trt), size = 1) +
+  geom_vline(data=vline_df,aes(xintercept = LD50_val, color = trt), linetype = "dashed") +
+  
+  geom_text(
+  data = LD50_df,
+  aes(
+    x = LD50_val,
+    y = max_y,
+    label = paste0("LD50 = ", signif(LD50_val, 3)),
+    color = trt,
+    vjust = ifelse(trt == "DOX", 1.2, -0.5)
+  ),
+  angle = 90, hjust = 1.1
+)+
+  scale_x_log10() +
+  theme_minimal() +
+  ggtitle("iPSC 87-1 Dose Response Assay CX and DOX") +
+  labs(color = "Treatment")+
+  scale_color_manual(values = c("CX" = "blue", "DOX" = "red"))
+
+
+```
+
 ### 75-1 iPSC renee
 
 ```{r 75-1 iPSC me}
@@ -1528,3 +1578,47 @@ summ_all.1 %>%
 # write.csv(all_lines.1,"data/individual_data_points_CM_viability_new75_3-96.csv")
 
 ```
+```{r 96hour viability graph}
+
+summ_all.1 %>% 
+  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
+  mutate(group=paste0(conc,"_",tx)) %>%
+  mutate(group=factor(group,levels=c("0.1_CX","0.5_CX","2.5_CX",
+                                     "0.1_DOX","0.5_DOX","2.5_DOX",
+                                     "0.1_VEH","0.5_VEH","2.5_VEH"))) %>% 
+  dplyr::filter(Time %in% c("T96")) %>% 
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=tx))+
+
+  ggsignif:: geom_signif(comparisons = list(
+      c("0.1_VEH", "0.1_CX"),
+      c("0.1_VEH", "0.1_DOX"),
+      c("0.5_VEH", "0.5_CX"),
+      c("0.5_VEH", "0.5_DOX"),
+      c("2.5_VEH", "2.5_CX"),
+      c("2.5_VEH", "2.5_DOX")),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = "t.test")+
+  theme_classic()+
+  ggtitle("Viability at 96 hours")
+ 
+  
+  
+  summ_all.1 %>% 
+  dplyr::filter(tx %in% c("CX","DOX","VEH")) %>% 
+  mutate(group=paste0(conc,"_",tx)) %>%
+  mutate(group=factor(group,levels=c("0.1_CX","0.5_CX","2.5_CX",
+                                     "0.1_DOX","0.5_DOX","2.5_DOX",
+                                     "0.1_VEH","0.5_VEH","2.5_VEH"))) %>% 
+  dplyr::filter(Time %in% c("T96")) %>% 
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=tx))+
+  theme_classic()+
+  ggtitle("Viability at 96 hours")+
+  coord_cartesian(ylim = c(0,200))
+
+
+
+```
+
