@@ -575,4 +575,50 @@ combined_doserange_table %>%
       ggtitle("Concentration range")+
   theme(axis.text.x=element_text(angle=45,hjust=1))
 ```
+```{r}
+combined_doserange_supp_plot <- bind_rows(n78_table,n87_table) %>%
+  bind_rows(., n75_table) %>% 
+  dplyr::filter(tx %in% c("CX","VEH")) %>% 
+  mutate(tx=factor(tx, levels= c("CX","VEH")),
+         conc=factor(conc, levels = c("0.1um","0.5um","1um","2.5um", "5um","10um"))) %>% 
+  mutate(grouping=paste0(tx,"_",conc)) %>% 
+  mutate(grouping=factor(grouping,levels=c("CX_0.1um","CX_0.5um","CX_1um",
+                                           "CX_2.5um","CX_5um","CX_10um",
+                                           "VEH_0.1um","VEH_0.5um","VEH_1um",
+                                           "VEH_2.5um","VEH_5um","VEH_10um")))
+
+
+combined_doserange_supp_plot %>% 
+ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c("VEH_0.1um", "CX_0.1um"),
+   
+      c("VEH_0.5um", "CX_0.5um"),
+      
+      c("VEH_1um", "CX_1um"),
+  
+      c("VEH_2.5um", "CX_2.5um"),
+   
+      c("VEH_5um", "CX_5um"),
+   
+      c("VEH_10um", "CX_10um")),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = "t.test")+
+      theme_bw()+
+      ggtitle("Concentration range")+
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+
+
+combined_doserange_supp_plot %>% 
+ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  theme_bw()+
+      ggtitle("Concentration range")+
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+
+```
 
