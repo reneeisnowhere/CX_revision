@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreeb5e160e24576cdc9a51dc0f1b7efeef7dcd7b42etargetblankb5e160ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreef33d52137fe2d637ddccd4de511237c70f75cb98targetblankf33d521a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/b5e160e24576cdc9a51dc0f1b7efeef7dcd7b42e" target="_blank">b5e160e</a>
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/f33d52137fe2d637ddccd4de511237c70f75cb98" target="_blank">f33d521</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreeb5e160e24576cdc9a51dc0f1b7efeef7dcd7b42etargetblankb5e160ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreef33d52137fe2d637ddccd4de511237c70f75cb98targetblankf33d521a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/b5e160e24576cdc9a51dc0f1b7efeef7dcd7b42e" target="_blank">b5e160e</a>.
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/f33d52137fe2d637ddccd4de511237c70f75cb98" target="_blank">f33d521</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -596,6 +596,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/f33d52137fe2d637ddccd4de511237c70f75cb98/analysis/Image_processing.Rmd" target="_blank">f33d521</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-11
+</td>
+<td>
+adding concentration range
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/reneeisnowhere/CX_revision/2a11490062e9f8cfcc6765643ab88a72e6404b15/docs/Image_processing.html" target="_blank">2a11490</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1286,6 +1320,91 @@ reneeisnowhere
 </div>
 </div>
 <pre class="r"><code># write_csv(combined_if_table, &quot;data/IF_table_combined_T3_T24_T48_gamma.csv&quot;)</code></pre>
+<pre class="r"><code>gamma_count_75&lt;- read_delim(&quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/75-1/DAPI_counts/Master_summary_75_final.csv&quot;) %&gt;% na.omit()
+
+gamma_count_78&lt;- read_delim(&quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/78-1/DAPI_counts/Master_summary_78_final.csv&quot;) %&gt;% na.omit()
+
+
+gamma_count_87&lt;- read_delim(&quot;C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/87-1/DAPI_counts/Master_summary_87_final.csv&quot;) %&gt;% na.omit()
+
+
+n75_table &lt;-   gamma_count_75 %&gt;%
+  separate(Sample, into= c(&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;, &quot;focus&quot;,&quot;DAPI&quot;,&quot;number&quot;), sep=&quot;_&quot;) %&gt;% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100) %&gt;% 
+  dplyr::filter(tx != &quot;untx&quot;) %&gt;% 
+  dplyr::filter(tx != &quot;2nd&quot;) %&gt;% 
+  group_by(tx, conc) %&gt;%
+  mutate(group_number = rep(c(&quot;A&quot;,&quot;B&quot;), length.out = n())) %&gt;% 
+  ungroup() %&gt;% 
+  dplyr::select(conc:tx,percent_pos,group_number) %&gt;% 
+  pivot_wider(., id_cols=c(conc,ind,tx), names_from = group_number, values_from = percent_pos) %&gt;% 
+    rowwise() %&gt;%
+  mutate(conc=str_replace(conc, pattern=&quot;-&quot;,replacement=&quot;.&quot;)) %&gt;%
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1))
+
+n87_table &lt;-  gamma_count_87 %&gt;%
+  separate(Sample, into= c(&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;, &quot;focus&quot;,&quot;DAPI&quot;,&quot;number&quot;), sep=&quot;_&quot;) %&gt;% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100) %&gt;% 
+  dplyr::filter(tx != &quot;untx&quot;) %&gt;% 
+  dplyr::filter(tx != &quot;2nddox&quot;) %&gt;% 
+  group_by(tx, conc) %&gt;%
+  mutate(group_number = rep(c(&quot;A&quot;,&quot;B&quot;), length.out = n())) %&gt;% 
+  ungroup() %&gt;% 
+  dplyr::select(conc:tx,percent_pos,group_number) %&gt;% 
+  pivot_wider(., id_cols=c(conc,ind,tx), names_from = group_number, values_from = percent_pos) %&gt;% 
+    rowwise() %&gt;%
+  mutate(conc=str_replace(conc, pattern=&quot;-&quot;,replacement=&quot;.&quot;)) %&gt;%
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1))
+
+n78_table &lt;-  gamma_count_78 %&gt;%
+  separate(Sample, into= c(&quot;conc&quot;,&quot;ind&quot;,&quot;tx&quot;, &quot;focus&quot;,&quot;DAPI&quot;,&quot;number&quot;), sep=&quot;_&quot;) %&gt;% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100) %&gt;% 
+  dplyr::filter(tx != &quot;untx&quot;) %&gt;% 
+  dplyr::filter(tx != &quot;2nd&quot;) %&gt;% 
+  group_by(tx, conc) %&gt;%
+  mutate(group_number = rep(c(&quot;A&quot;,&quot;B&quot;), length.out = n())) %&gt;% 
+  ungroup() %&gt;% 
+  dplyr::select(conc:tx,percent_pos,group_number) %&gt;% 
+  pivot_wider(., id_cols=c(conc,ind,tx), names_from = group_number, values_from = percent_pos) %&gt;% 
+    rowwise() %&gt;%
+  mutate(conc=str_replace(conc, pattern=&quot;-&quot;,replacement=&quot;.&quot;)) %&gt;%
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1))</code></pre>
+<pre class="r"><code>combined_doserange_table &lt;- bind_rows(n78_table,n87_table) %&gt;%
+  bind_rows(., n75_table) %&gt;% 
+  mutate(tx=factor(tx, levels= c(&quot;VEH&quot;,&quot;CX&quot;,&quot;DOX&quot;)),
+         conc=factor(conc, levels = c(&quot;0.1um&quot;,&quot;0.5um&quot;,&quot;1um&quot;,&quot;2.5um&quot;, &quot;5um&quot;,&quot;10um&quot;))) %&gt;% 
+  mutate(grouping=paste0(tx,&quot;_&quot;,conc)) %&gt;% 
+  mutate(grouping=factor(grouping,levels=c(&quot;VEH_0.1um&quot;,&quot;CX_0.1um&quot;,&quot;DOX_0.1um&quot;,
+                                           &quot;VEH_0.5um&quot;,&quot;CX_0.5um&quot;,&quot;DOX_0.5um&quot;,
+                                           &quot;VEH_1um&quot;,&quot;CX_1um&quot;,&quot;DOX_1um&quot;,
+                                           &quot;VEH_2.5um&quot;,&quot;CX_2.5um&quot;,&quot;DOX_2.5um&quot;,
+                                           &quot;VEH_5um&quot;,&quot;CX_5um&quot;,&quot;DOX_5um&quot;,
+                                           &quot;VEH_10um&quot;,&quot;CX_10um&quot;,&quot;DOX_10um&quot;)))</code></pre>
+<pre class="r"><code>combined_doserange_table %&gt;% 
+  # dplyr::filter(conc==&quot;2.5um&quot;) %&gt;% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c(&quot;VEH_0.1um&quot;, &quot;CX_0.1um&quot;),
+      c(&quot;VEH_0.1um&quot;, &quot;DOX_0.1um&quot;),
+      c(&quot;VEH_0.5um&quot;, &quot;CX_0.5um&quot;),
+      c(&quot;VEH_0.5um&quot;, &quot;DOX_0.5um&quot;),
+      c(&quot;VEH_1um&quot;, &quot;CX_1um&quot;),
+      c(&quot;VEH_1um&quot;, &quot;DOX_1um&quot;),
+      c(&quot;VEH_2.5um&quot;, &quot;CX_2.5um&quot;),
+      c(&quot;VEH_2.5um&quot;, &quot;DOX_2.5um&quot;),
+      c(&quot;VEH_5um&quot;, &quot;CX_5um&quot;),
+      c(&quot;VEH_5um&quot;, &quot;DOX_5um&quot;),
+      c(&quot;VEH_10um&quot;, &quot;CX_10um&quot;),
+       c(&quot;VEH_10um&quot;, &quot;DOX_10um&quot;)),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = &quot;t.test&quot;)+
+      theme_bw()+
+      ggtitle(&quot;Concentration range&quot;)+
+  theme(axis.text.x=element_text(angle=45,hjust=1))</code></pre>
+<p><img src="figure/Image_processing.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
