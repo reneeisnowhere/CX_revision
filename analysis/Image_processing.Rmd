@@ -217,6 +217,7 @@ txredFolder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\C_TxRed\
 outputFolder = "C:\\userfolders\\Images_EVOS\\If_cardiotox\\87-1 images\\DAPI_counts\\";
 signalThreshold = 5;  // define what counts as a "positive signal"
 
+
 // === GET ROI FILES ===
 roiFiles = getFileList(roiFolder);
 // Before the loop, open/create summary file
@@ -295,7 +296,7 @@ roiManager("Measure");
     }
 // === Optional quality control: flag unexpectedly low or high counts ===
 minPos = 15;
-maxPos = 50;
+maxPos = 16;
 
 if (positiveCount < minPos || positiveCount > maxPos) {
     print("⚠️ WARNING: Sample", baseName, "has", positiveCount, "positive ROIs (expected between", minPos, "and", maxPos, ")");
@@ -304,6 +305,18 @@ if (positiveCount < minPos || positiveCount > maxPos) {
     roiManager("Show All");
 
     waitForUser("Inspect and adjust this sample manually if needed.\nWhen done, click OK to re-measure and continue.");
+   // Reapply measurement settings after manual changes
+run("Clear Results");
+run("Set Measurements...", "area mean min redirect=[" + imageTitle + "] decimal=3");
+
+// Make sure the same image is selected and ROIs are active
+selectImage(imageTitle);
+roiCount = roiManager("Count");
+roiIndexes = newArray(roiCount);
+for (j = 0; j < roiCount; j++) roiIndexes[j] = j;
+
+roiManager("Select", roiIndexes);
+roiManager("Measure");
 
     // Reapply measurement settings after manual changes
     run("Clear Results");
@@ -343,7 +356,6 @@ File.append(line, masterFile);
     roiManager("Reset");
     run("Clear Results");
 }
-
 ```
 
 
@@ -417,6 +429,7 @@ combined_if_table <- bind_rows(Ind_78_table,Ind_87_table) %>%
   mutate(grouping=factor(grouping,levels=c("VEH_T3","CX_T3","DOX_T3",
                                           "VEH_T24","CX_T24","DOX_T24",
                                           "VEH_T48","CX_T48","DOX_T48")))
+
   
 combined_if_table %>% 
   dplyr::filter(conc=="2.5um") %>% 
@@ -460,5 +473,7 @@ combined_if_table %>%
   facet_wrap(~conc)+
       ggtitle("0.1um and 0.5 uM at T3, T24, T48")+
   theme(axis.text.x=element_text(angle=45,hjust=1))
+
+# write_csv(combined_if_table, "data/IF_table_combined_T3_T24_T48_gamma.csv")
 ```
 
