@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreef33d52137fe2d637ddccd4de511237c70f75cb98targetblankf33d521a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree511ceab92abbd810386ebee19161a0de27ec696atargetblank511ceaba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/f33d52137fe2d637ddccd4de511237c70f75cb98" target="_blank">f33d521</a>
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/511ceab92abbd810386ebee19161a0de27ec696a" target="_blank">511ceab</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontreef33d52137fe2d637ddccd4de511237c70f75cb98targetblankf33d521a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree511ceab92abbd810386ebee19161a0de27ec696atargetblank511ceaba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/f33d52137fe2d637ddccd4de511237c70f75cb98" target="_blank">f33d521</a>.
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/511ceab92abbd810386ebee19161a0de27ec696a" target="_blank">511ceab</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -596,6 +596,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/511ceab92abbd810386ebee19161a0de27ec696a/analysis/Image_processing.Rmd" target="_blank">511ceab</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-11
+</td>
+<td>
+updates for supplemental plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/reneeisnowhere/CX_revision/04246cefbe20c73006f7326d1d143a8af0253873/docs/Image_processing.html" target="_blank">04246ce</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1405,6 +1439,86 @@ n78_table &lt;-  gamma_count_78 %&gt;%
       ggtitle(&quot;Concentration range&quot;)+
   theme(axis.text.x=element_text(angle=45,hjust=1))</code></pre>
 <p><img src="figure/Image_processing.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/04246cefbe20c73006f7326d1d143a8af0253873/docs/figure/Image_processing.Rmd/unnamed-chunk-6-1.png" target="_blank">04246ce</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>combined_doserange_supp_plot &lt;- bind_rows(n78_table,n87_table) %&gt;%
+  bind_rows(., n75_table) %&gt;% 
+  dplyr::filter(tx %in% c(&quot;CX&quot;,&quot;VEH&quot;)) %&gt;% 
+  mutate(tx=factor(tx, levels= c(&quot;CX&quot;,&quot;VEH&quot;)),
+         conc=factor(conc, levels = c(&quot;0.1um&quot;,&quot;0.5um&quot;,&quot;1um&quot;,&quot;2.5um&quot;, &quot;5um&quot;,&quot;10um&quot;))) %&gt;% 
+  mutate(grouping=paste0(tx,&quot;_&quot;,conc)) %&gt;% 
+  mutate(grouping=factor(grouping,levels=c(&quot;CX_0.1um&quot;,&quot;CX_0.5um&quot;,&quot;CX_1um&quot;,
+                                           &quot;CX_2.5um&quot;,&quot;CX_5um&quot;,&quot;CX_10um&quot;,
+                                           &quot;VEH_0.1um&quot;,&quot;VEH_0.5um&quot;,&quot;VEH_1um&quot;,
+                                           &quot;VEH_2.5um&quot;,&quot;VEH_5um&quot;,&quot;VEH_10um&quot;)))
+
+
+combined_doserange_supp_plot %&gt;% 
+ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c(&quot;VEH_0.1um&quot;, &quot;CX_0.1um&quot;),
+   
+      c(&quot;VEH_0.5um&quot;, &quot;CX_0.5um&quot;),
+      
+      c(&quot;VEH_1um&quot;, &quot;CX_1um&quot;),
+  
+      c(&quot;VEH_2.5um&quot;, &quot;CX_2.5um&quot;),
+   
+      c(&quot;VEH_5um&quot;, &quot;CX_5um&quot;),
+   
+      c(&quot;VEH_10um&quot;, &quot;CX_10um&quot;)),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = &quot;t.test&quot;)+
+      theme_bw()+
+      ggtitle(&quot;Concentration range&quot;)+
+  theme(axis.text.x=element_text(angle=45,hjust=1))</code></pre>
+<p><img src="figure/Image_processing.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>combined_doserange_supp_plot %&gt;% 
+ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  theme_bw()+
+      ggtitle(&quot;Concentration range&quot;)+
+  theme(axis.text.x=element_text(angle=45,hjust=1))</code></pre>
+<p><img src="figure/Image_processing.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
