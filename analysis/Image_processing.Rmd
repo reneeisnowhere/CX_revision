@@ -477,3 +477,102 @@ combined_if_table %>%
 # write_csv(combined_if_table, "data/IF_table_combined_T3_T24_T48_gamma.csv")
 ```
 
+```{r}
+gamma_count_75<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/75-1/DAPI_counts/Master_summary_75_final.csv") %>% na.omit()
+
+gamma_count_78<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/78-1/DAPI_counts/Master_summary_78_final.csv") %>% na.omit()
+
+
+gamma_count_87<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/87-1/DAPI_counts/Master_summary_87_final.csv") %>% na.omit()
+
+
+n75_table <-   gamma_count_75 %>%
+  separate(Sample, into= c("conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100) %>% 
+  dplyr::filter(tx != "untx") %>% 
+  dplyr::filter(tx != "2nd") %>% 
+  group_by(tx, conc) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>% 
+  ungroup() %>% 
+  dplyr::select(conc:tx,percent_pos,group_number) %>% 
+  pivot_wider(., id_cols=c(conc,ind,tx), names_from = group_number, values_from = percent_pos) %>% 
+    rowwise() %>%
+  mutate(conc=str_replace(conc, pattern="-",replacement=".")) %>%
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1))
+
+n87_table <-  gamma_count_87 %>%
+  separate(Sample, into= c("conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100) %>% 
+  dplyr::filter(tx != "untx") %>% 
+  dplyr::filter(tx != "2nddox") %>% 
+  group_by(tx, conc) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>% 
+  ungroup() %>% 
+  dplyr::select(conc:tx,percent_pos,group_number) %>% 
+  pivot_wider(., id_cols=c(conc,ind,tx), names_from = group_number, values_from = percent_pos) %>% 
+    rowwise() %>%
+  mutate(conc=str_replace(conc, pattern="-",replacement=".")) %>%
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1))
+
+n78_table <-  gamma_count_78 %>%
+  separate(Sample, into= c("conc","ind","tx", "focus","DAPI","number"), sep="_") %>% 
+  mutate(percent_pos= Positive_ROIs/Total_ROIs * 100) %>% 
+  dplyr::filter(tx != "untx") %>% 
+  dplyr::filter(tx != "2nd") %>% 
+  group_by(tx, conc) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>% 
+  ungroup() %>% 
+  dplyr::select(conc:tx,percent_pos,group_number) %>% 
+  pivot_wider(., id_cols=c(conc,ind,tx), names_from = group_number, values_from = percent_pos) %>% 
+    rowwise() %>%
+  mutate(conc=str_replace(conc, pattern="-",replacement=".")) %>%
+  mutate(total = round(mean(c_across(c(A, B)), na.rm = TRUE), digits = 1))
+
+```
+
+```{r combining doserange}
+
+
+combined_doserange_table <- bind_rows(n78_table,n87_table) %>%
+  bind_rows(., n75_table) %>% 
+  mutate(tx=factor(tx, levels= c("VEH","CX","DOX")),
+         conc=factor(conc, levels = c("0.1um","0.5um","1um","2.5um", "5um","10um"))) %>% 
+  mutate(grouping=paste0(tx,"_",conc)) %>% 
+  mutate(grouping=factor(grouping,levels=c("VEH_0.1um","CX_0.1um","DOX_0.1um",
+                                           "VEH_0.5um","CX_0.5um","DOX_0.5um",
+                                           "VEH_1um","CX_1um","DOX_1um",
+                                           "VEH_2.5um","CX_2.5um","DOX_2.5um",
+                                           "VEH_5um","CX_5um","DOX_5um",
+                                           "VEH_10um","CX_10um","DOX_10um")))
+
+
+```
+
+```{r}
+
+combined_doserange_table %>% 
+  # dplyr::filter(conc=="2.5um") %>% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  ggsignif:: geom_signif(comparisons = list(
+      c("VEH_0.1um", "CX_0.1um"),
+      c("VEH_0.1um", "DOX_0.1um"),
+      c("VEH_0.5um", "CX_0.5um"),
+      c("VEH_0.5um", "DOX_0.5um"),
+      c("VEH_1um", "CX_1um"),
+      c("VEH_1um", "DOX_1um"),
+      c("VEH_2.5um", "CX_2.5um"),
+      c("VEH_2.5um", "DOX_2.5um"),
+      c("VEH_5um", "CX_5um"),
+      c("VEH_5um", "DOX_5um"),
+      c("VEH_10um", "CX_10um"),
+       c("VEH_10um", "DOX_10um")),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = "t.test")+
+      theme_bw()+
+      ggtitle("Concentration range")+
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+```
+
