@@ -476,6 +476,9 @@ combined_if_table %>%
 
 # write_csv(combined_if_table, "data/IF_table_combined_T3_T24_T48_gamma.csv")
 ```
+```{r fig3c}
+
+```
 
 ```{r}
 gamma_count_75<- read_delim("C:/Users/renee/Other_projects_data/CX_revision_data/Images_Evos/24hour_JAG/75-1/DAPI_counts/Master_summary_75_final.csv") %>% na.omit()
@@ -619,6 +622,8 @@ ggplot(., aes(x=grouping,y=total))+
   theme_bw()+
       ggtitle("Concentration range")+
   theme(axis.text.x=element_text(angle=45,hjust=1))
+
+# write_csv(combined_doserange_table, "data/IF_concentration_range_combined.csv")
 
 ```
 
