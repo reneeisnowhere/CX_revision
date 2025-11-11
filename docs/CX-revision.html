@@ -11,7 +11,7 @@
 
 <meta name="author" content="Renee Matthews" />
 
-<meta name="date" content="2025-11-10" />
+<meta name="date" content="2025-11-11" />
 
 <title>CX-revision</title>
 
@@ -353,7 +353,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">CX-revision</h1>
 <h4 class="author">Renee Matthews</h4>
-<h4 class="date">2025-11-10</h4>
+<h4 class="date">2025-11-11</h4>
 
 </div>
 
@@ -382,7 +382,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-11-10
+<strong>Last updated:</strong> 2025-11-11
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -513,15 +513,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree299f67c213c447d867658a0bc1b2d69ef1bef56ftargetblank299f67ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree6fd8c11c4097dd82d70c730a352c36bfd394fc57targetblank6fd8c11a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/299f67c213c447d867658a0bc1b2d69ef1bef56f" target="_blank">299f67c</a>
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/6fd8c11c4097dd82d70c730a352c36bfd394fc57" target="_blank">6fd8c11</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree299f67c213c447d867658a0bc1b2d69ef1bef56ftargetblank299f67ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomreneeisnowhereCXrevisiontree6fd8c11c4097dd82d70c730a352c36bfd394fc57targetblank6fd8c11a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -531,7 +531,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/reneeisnowhere/CX_revision/tree/299f67c213c447d867658a0bc1b2d69ef1bef56f" target="_blank">299f67c</a>.
+<a href="https://github.com/reneeisnowhere/CX_revision/tree/6fd8c11c4097dd82d70c730a352c36bfd394fc57" target="_blank">6fd8c11</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -550,14 +550,9 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
-Untracked files:
-    Untracked:  analysis/Image_processing.Rmd
-    Untracked:  data/Presto_blue_results/75_CM_p4_T96_251107.xlsx
-
 Unstaged changes:
     Modified:   CX_revison.Rproj
-    Modified:   data/CM_cell_viability_3-96_new75.csv
-    Modified:   data/individual_data_points_CM_viability_new75_3-96.csv
+    Modified:   analysis/Image_processing.Rmd
 
 </code></pre>
 <p>
@@ -602,6 +597,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/6fd8c11c4097dd82d70c730a352c36bfd394fc57/analysis/CX-revision.Rmd" target="_blank">6fd8c11</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-11
+</td>
+<td>
+supp plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/reneeisnowhere/CX_revision/db21753be3659b8ccd193c3359716ce1ec58c2db/docs/CX-revision.html" target="_blank">db21753</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1162,6 +1191,51 @@ reneeisnowhere
 </table>
 </div>
 </div>
+<pre class="r"><code>gpt_try_dbl &lt;- final_df %&gt;%
+mutate(conc.x = as.numeric(as.character(conc.x)))
+
+pred_both &lt;- bind_rows((pred %&gt;% mutate(trt=&quot;CX&quot;)), (pred_DOX%&gt;% mutate(trt=&quot;DOX&quot;)))
+
+LD50_df &lt;- data.frame(
+  trt = c(&quot;CX&quot;, &quot;DOX&quot;),
+  LD50_val = c(LD50_val, LD50_val_DOX),
+  max_y = c(
+    max(final_df$hr_norm[final_df$trt == &quot;CX&quot;], na.rm = TRUE),
+    max(final_df$hr_norm[final_df$trt == &quot;DOX&quot;], na.rm = TRUE)
+  )
+)
+
+vline_df &lt;- data.frame(
+  trt = c(&quot;CX&quot;, &quot;DOX&quot;),
+  LD50_val = c(LD50_val, LD50_val_DOX)
+)
+
+
+final_df %&gt;%
+mutate(conc.x = as.numeric(as.character(conc.x))) %&gt;% 
+  dplyr::filter(trt %in% c(&quot;CX&quot;,&quot;DOX&quot;)) %&gt;% 
+  ggplot(., aes(x = conc.x, y = hr_norm, color = trt)) +
+  geom_point() +
+  geom_line(data = pred_both, aes(x = conc.x, y = hr_norm, color = trt), size = 1) +
+  geom_vline(data=vline_df,aes(xintercept = LD50_val, color = trt), linetype = &quot;dashed&quot;) +
+  
+  geom_text(
+  data = LD50_df,
+  aes(
+    x = LD50_val,
+    y = max_y,
+    label = paste0(&quot;LD50 = &quot;, signif(LD50_val, 3)),
+    color = trt,
+    vjust = ifelse(trt == &quot;DOX&quot;, 1.2, -0.5)
+  ),
+  angle = 90, hjust = 1.1
+)+
+  scale_x_log10() +
+  theme_minimal() +
+  ggtitle(&quot;iPSC 87-1 Dose Response Assay CX and DOX&quot;) +
+  labs(color = &quot;Treatment&quot;)+
+  scale_color_manual(values = c(&quot;CX&quot; = &quot;blue&quot;, &quot;DOX&quot; = &quot;red&quot;))</code></pre>
+<p><img src="figure/CX-revision.Rmd/combodrc-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="ipsc-renee" class="section level3">
 <h3>75-1 iPSC renee</h3>
 <pre class="r"><code>T0_75_iPSC_p1_viability &lt;- read_excel(&quot;data/Presto_blue_results/75_p1_iPSC_T0_251026.xls&quot;, 
@@ -2937,6 +3011,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/db21753be3659b8ccd193c3359716ce1ec58c2db/docs/figure/CX-revision.Rmd/unnamed-chunk-10-1.png" target="_blank">db21753</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/reneeisnowhere/CX_revision/blob/f88e6e810cc9a26f7c04b1c4a9571bf2acf2ffed/docs/figure/CX-revision.Rmd/unnamed-chunk-10-1.png" target="_blank">f88e6e8</a>
 </td>
 <td>
@@ -3002,6 +3087,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/reneeisnowhere/CX_revision/blob/db21753be3659b8ccd193c3359716ce1ec58c2db/docs/figure/CX-revision.Rmd/unnamed-chunk-10-2.png" target="_blank">db21753</a>
+</td>
+<td>
+reneeisnowhere
+</td>
+<td>
+2025-11-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/reneeisnowhere/CX_revision/blob/f88e6e810cc9a26f7c04b1c4a9571bf2acf2ffed/docs/figure/CX-revision.Rmd/unnamed-chunk-10-2.png" target="_blank">f88e6e8</a>
 </td>
 <td>
@@ -3017,6 +3113,42 @@ reneeisnowhere
 </div>
 <pre class="r"><code># write.csv(summ_all.1,&quot;data/CM_cell_viability_3-96_new75.csv&quot;)
 # write.csv(all_lines.1,&quot;data/individual_data_points_CM_viability_new75_3-96.csv&quot;)</code></pre>
+<pre class="r"><code>summ_all.1 %&gt;% 
+  dplyr::filter(tx %in% c(&quot;CX&quot;,&quot;DOX&quot;,&quot;VEH&quot;)) %&gt;% 
+  mutate(group=paste0(conc,&quot;_&quot;,tx)) %&gt;%
+  mutate(group=factor(group,levels=c(&quot;0.1_CX&quot;,&quot;0.5_CX&quot;,&quot;2.5_CX&quot;,
+                                     &quot;0.1_DOX&quot;,&quot;0.5_DOX&quot;,&quot;2.5_DOX&quot;,
+                                     &quot;0.1_VEH&quot;,&quot;0.5_VEH&quot;,&quot;2.5_VEH&quot;))) %&gt;% 
+  dplyr::filter(Time %in% c(&quot;T96&quot;)) %&gt;% 
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=tx))+
+
+  ggsignif:: geom_signif(comparisons = list(
+      c(&quot;0.1_VEH&quot;, &quot;0.1_CX&quot;),
+      c(&quot;0.1_VEH&quot;, &quot;0.1_DOX&quot;),
+      c(&quot;0.5_VEH&quot;, &quot;0.5_CX&quot;),
+      c(&quot;0.5_VEH&quot;, &quot;0.5_DOX&quot;),
+      c(&quot;2.5_VEH&quot;, &quot;2.5_CX&quot;),
+      c(&quot;2.5_VEH&quot;, &quot;2.5_DOX&quot;)),
+      step_increase = 0.1,
+      map_signif_level = FALSE, 
+      test = &quot;t.test&quot;)+
+  theme_classic()+
+  ggtitle(&quot;Viability at 96 hours&quot;)</code></pre>
+<p><img src="figure/CX-revision.Rmd/96hour%20viability%20graph-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  summ_all.1 %&gt;% 
+  dplyr::filter(tx %in% c(&quot;CX&quot;,&quot;DOX&quot;,&quot;VEH&quot;)) %&gt;% 
+  mutate(group=paste0(conc,&quot;_&quot;,tx)) %&gt;%
+  mutate(group=factor(group,levels=c(&quot;0.1_CX&quot;,&quot;0.5_CX&quot;,&quot;2.5_CX&quot;,
+                                     &quot;0.1_DOX&quot;,&quot;0.5_DOX&quot;,&quot;2.5_DOX&quot;,
+                                     &quot;0.1_VEH&quot;,&quot;0.5_VEH&quot;,&quot;2.5_VEH&quot;))) %&gt;% 
+  dplyr::filter(Time %in% c(&quot;T96&quot;)) %&gt;% 
+  ggplot(aes(x=group,y=mean_Tx_over_T0))+
+  geom_boxplot(aes(fill=tx))+
+  theme_classic()+
+  ggtitle(&quot;Viability at 96 hours&quot;)+
+  coord_cartesian(ylim = c(0,200))</code></pre>
+<p><img src="figure/CX-revision.Rmd/96hour%20viability%20graph-2.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -3067,10 +3199,10 @@ loaded via a namespace (and not attached):
 [45] fastmap_1.2.0      grid_4.4.2         cli_3.6.5          magrittr_2.0.3    
 [49] survival_3.8-3     dichromat_2.0-0.1  TH.data_1.1-4      withr_3.0.2       
 [53] scales_1.4.0       promises_1.3.3     plotrix_3.8-4      timechange_0.3.0  
-[57] rmarkdown_2.29     httr_1.4.7         cellranger_1.1.0   zoo_1.8-14        
-[61] hms_1.1.3          evaluate_1.0.5     knitr_1.50         mgcv_1.9-3        
-[65] rlang_1.1.6        Rcpp_1.1.0         glue_1.8.0         rstudioapi_0.17.1 
-[69] jsonlite_2.0.0     R6_2.6.1           fs_1.6.6          </code></pre>
+[57] rmarkdown_2.29     httr_1.4.7         ggsignif_0.6.4     cellranger_1.1.0  
+[61] zoo_1.8-14         hms_1.1.3          evaluate_1.0.5     knitr_1.50        
+[65] mgcv_1.9-3         rlang_1.1.6        Rcpp_1.1.0         glue_1.8.0        
+[69] rstudioapi_0.17.1  jsonlite_2.0.0     R6_2.6.1           fs_1.6.6          </code></pre>
 </div>
 </div>
 </div>
