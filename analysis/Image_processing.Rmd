@@ -664,7 +664,8 @@ ggplot(., aes(x=grouping,y=total))+
       theme_bw()+
       ggtitle("Concentration range")+
   theme(axis.text.x=element_text(angle=45,hjust=1))+
-  scale_fill_manual(values=c("green","purple","red3"))
+  scale_fill_manual(values=c("green","purple","red3"))+
+  coord_cartesian(ylim=c(0,100))
 
 
 combined_doserange_supp_plot %>% 
@@ -674,7 +675,8 @@ ggplot(., aes(x=grouping,y=total))+
   theme_bw()+
       ggtitle("Concentration range")+
   theme(axis.text.x=element_text(angle=45,hjust=1))+
-  scale_fill_manual(values=c("green","purple","red3"))
+  scale_fill_manual(values=c("green","purple","red3"))+
+  coord_cartesian(ylim=c(0,100))
 
 # write_csv(combined_doserange_table, "data/IF_concentration_range_combined.csv")
 
