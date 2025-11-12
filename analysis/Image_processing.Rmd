@@ -449,6 +449,28 @@ combined_if_table %>%
       theme_bw()+
       ggtitle("2.5 uM at T3, T24, T48")
 
+combined_if_table %>% 
+  dplyr::filter(conc=="2.5um") %>% 
+  mutate(grouping=factor(grouping, 
+                         levels = c("CX_T3","CX_T24","CX_T48",
+                                    "DOX_T3","DOX_T24","DOX_T48",
+                                    "VEH_T3","VEH_T24","VEH_T48"))) %>% 
+  ggplot(., aes(x=grouping,y=total))+
+  geom_boxplot()+
+  geom_point(aes(color=ind,size=5))+
+  # ggsignif:: geom_signif(comparisons = list(
+  #     c("VEH_T3", "DOX_T3"),
+  #     c("VEH_T3", "CX_T3"),
+  #     c("VEH_T24", "DOX_T24"),
+  #     c("VEH_T24", "CX_T24"),
+  #     c("VEH_T48", "DOX_T48"),
+  #      c("VEH_T48", "CX_T48")),
+  #     step_increase = 0.1,
+  #     map_signif_level = FALSE, 
+  #     test = "t.test")+
+      theme_bw()+
+      ggtitle("2.5 uM at T3, T24, T48")
+
 
 ```
 
@@ -473,6 +495,35 @@ combined_if_table %>%
   facet_wrap(~conc)+
       ggtitle("0.1um and 0.5 uM at T3, T24, T48")+
   theme(axis.text.x=element_text(angle=45,hjust=1))
+
+combined_if_table %>% 
+  dplyr::filter(conc!="2.5um") %>% 
+  mutate(other_group=paste0(tx,"_",time,"_",conc)) %>% 
+  mutate(other_group=factor(other_group, 
+                            levels = c("CX_T3_0.1um","CX_T24_0.1um","CX_T48_0.1um",
+                                       "CX_T3_0.5um","CX_T24_0.5um","CX_T48_0.5um",
+                           "DOX_T3_0.1um","DOX_T24_0.1um","DOX_T48_0.1um",
+                                       "DOX_T3_0.5um","DOX_T24_0.5um","DOX_T48_0.5um",
+                           "VEH_T3_0.1um","VEH_T24_0.1um","VEH_T48_0.1um",
+                                       "VEH_T3_0.5um","VEH_T24_0.5um","VEH_T48_0.5um"))) %>% 
+  ggplot(., aes(x=other_group,y=total))+
+  geom_boxplot(aes(fill=tx))+
+  geom_point(aes(color=ind,size=5))+
+  # ggsignif:: geom_signif(comparisons = list(
+  #     c("VEH_T3", "DOX_T3"),
+  #     c("VEH_T3", "CX_T3"),
+  #     c("VEH_T24", "DOX_T24"),
+  #     c("VEH_T24", "CX_T24"),
+  #     c("VEH_T48", "DOX_T48"),
+  #      c("VEH_T48", "CX_T48")),
+  #     step_increase = 0.1,
+  #     map_signif_level = FALSE, 
+  #     test = "t.test")+
+      theme_bw()+
+  # facet_wrap(~conc)+
+      ggtitle("0.1um and 0.5 uM at T3, T24, T48")+
+  theme(axis.text.x=element_text(angle=45,hjust=1))+
+  scale_fill_manual(values=c("green","purple","red3"))
 
 # write_csv(combined_if_table, "data/IF_table_combined_T3_T24_T48_gamma.csv")
 ```
@@ -578,7 +629,7 @@ combined_doserange_table %>%
       ggtitle("Concentration range")+
   theme(axis.text.x=element_text(angle=45,hjust=1))
 ```
-```{r}
+```{r doserange plot}
 combined_doserange_supp_plot <- bind_rows(n78_table,n87_table) %>%
   bind_rows(., n75_table) %>% 
   dplyr::filter(tx %in% c("CX","VEH")) %>% 
@@ -593,7 +644,7 @@ combined_doserange_supp_plot <- bind_rows(n78_table,n87_table) %>%
 
 combined_doserange_supp_plot %>% 
 ggplot(., aes(x=grouping,y=total))+
-  geom_boxplot()+
+  geom_boxplot(aes(fill=tx))+
   geom_point(aes(color=ind,size=5))+
   ggsignif:: geom_signif(comparisons = list(
       c("VEH_0.1um", "CX_0.1um"),
@@ -612,16 +663,18 @@ ggplot(., aes(x=grouping,y=total))+
       test = "t.test")+
       theme_bw()+
       ggtitle("Concentration range")+
-  theme(axis.text.x=element_text(angle=45,hjust=1))
+  theme(axis.text.x=element_text(angle=45,hjust=1))+
+  scale_fill_manual(values=c("green","purple","red3"))
 
 
 combined_doserange_supp_plot %>% 
 ggplot(., aes(x=grouping,y=total))+
-  geom_boxplot()+
+  geom_boxplot(aes(fill=tx))+
   geom_point(aes(color=ind,size=5))+
   theme_bw()+
       ggtitle("Concentration range")+
-  theme(axis.text.x=element_text(angle=45,hjust=1))
+  theme(axis.text.x=element_text(angle=45,hjust=1))+
+  scale_fill_manual(values=c("green","purple","red3"))
 
 # write_csv(combined_doserange_table, "data/IF_concentration_range_combined.csv")
 
