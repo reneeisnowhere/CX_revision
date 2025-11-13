@@ -658,7 +658,7 @@ ggplot(., aes(x=grouping,y=total))+
       c("VEH_5um", "CX_5um"),
    
       c("VEH_10um", "CX_10um")),
-      step_increase = 0.1,
+      step_increase = 0.2,
       map_signif_level = FALSE, 
       test = "t.test")+
       theme_bw()+
